@@ -1,13 +1,16 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
-// must write in spaces - for now
 public class Interpreter {
     private HashMap<String, Integer> variables;
+    private HashMap<String, List<String>> functions;
 
     public Interpreter() {
         this.variables = new HashMap<>();
+        this.functions = new HashMap<>();
     }
 
     public void execute() {
@@ -19,7 +22,7 @@ public class Interpreter {
             if (line.trim().equals("execute")) {
                 break;
             }
-            runCode(line); 
+            runCode(line);
         }
     }
 
@@ -36,7 +39,7 @@ public class Interpreter {
         }
         String[] tokens = line.split("\\s+");
         switch (tokens[0]) {
-            case "var":// TODO: Run over changes
+            case "var":
             case "VAR":
                 executeVarDeclaration(tokens);
                 break;
@@ -50,17 +53,34 @@ public class Interpreter {
                 break;
             case "fun":
             case "FUN":
-                executeFunction(Arrays.copyOfRange(tokens, 1, tokens.length));
+                executeFunction(tokens);
                 break;
             default:
                 System.out.println("Invalid statement: " + line);
         }
     }
-    
-    private void executeFunction(String[] copyOfRange) {
-        throw new UnsupportedOperationException("Unimplemented method 'executeFunction'");
-    }
 
+    private void executeFunction(String[] tokens) {
+        String functionName = tokens[1];
+        List<String> functionVariables = new ArrayList<>();
+    
+        // Start from tokens[3], since tokens[2] is "%"
+        for (int i = 3; i < tokens.length; i++) {
+            String token = tokens[i];
+            if (token.equals("%")) 
+                break; 
+            if (token.equals(","))
+                continue;
+            functionVariables.add(token);
+        }
+        // // Print the contents of functionVariables
+        // System.out.println("Function Variables for " + functionName + ":");
+        // for (String var : functionVariables) {
+        //     System.out.println(var);
+        // }
+        functions.put(functionName, functionVariables);
+    }
+                        
     private void executeVarDeclaration(String[] tokens) {
         if (tokens.length < 4 || !tokens[2].equals("=")) {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
@@ -70,7 +90,7 @@ public class Interpreter {
         try {
             int varValue = Integer.parseInt(tokens[3]);
             variables.put(varName, varValue);
-        } catch (NumberFormatException e) {// Only numbers for now
+        } catch (NumberFormatException e) {
             System.out.println("Invalid variable value: " + tokens[3]);
         }
     }
@@ -101,17 +121,10 @@ public class Interpreter {
         }
         
         String operator = tokens[1];
-        
-        // Check if there are enough tokens to perform the operation
-        // if (tokens.length < 4) {
-        //     System.out.println("Insufficient operands for operation: " + operator);
-        //     return;
-        // }
-        
         int operand1;
         int operand2;
         
-        try {// need also to be implemneted by variables values(only number for now)
+        try {
             operand1 = Integer.parseInt(tokens[0]);
             operand2 = Integer.parseInt(tokens[2]);
         } catch (NumberFormatException e) {
@@ -134,10 +147,8 @@ public class Interpreter {
                 break;
         }
     }
-    
 
     private boolean isMathExpression(String[] tokens) {
-        // Check if the expression contains math operators
         for (String token : tokens) {
             if (token.matches("[+\\-*/]")) {
                 return true;
@@ -161,7 +172,7 @@ public class Interpreter {
                         operand = Integer.parseInt(token);
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid operand: " + token);
-                        return 0; // or throw an exception
+                        return 0;
                     }
                 }
                 switch (operator) {
@@ -189,7 +200,6 @@ public class Interpreter {
         }
         return result;
     }
-        
         
     public static void main(String[] args) {
         Interpreter interpreter = new Interpreter();
