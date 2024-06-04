@@ -15,7 +15,7 @@ public class Interpreter {
 
     public void execute() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your code below. Type 'execute' on a new line to run the code:");
+        System.out.print("Enter your code below. Type 'execute' on a new line to run the code:\n>> ");
         String line;
         while (true) {
             line = scanner.nextLine();
@@ -23,6 +23,7 @@ public class Interpreter {
                 break;
             }
             runCode(line);
+            System.out.print(">> ");
         }
     }
 
@@ -96,24 +97,51 @@ public class Interpreter {
     }
 
     private void executePrint(String[] tokens) {
+        double num;
         if (tokens.length < 2) {
             System.out.println("Invalid print statement: " + String.join(" ", tokens));
             return;
         }
         String varName = tokens[1];
-        if (variables.containsKey(varName)) {
+
+        if (variables.containsKey(varName)) {// needs to be a num for now
             int varValue = variables.get(varName);
             if (tokens.length > 2 && isMathExpression(tokens)) {
-                int result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
+                double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
                 System.out.println(result);
             } else {
                 System.out.println(varValue);
             }
         } else {
-            System.out.println("Variable not found: " + varName);
+            if (!isNum(tokens[1]))
+                System.out.println("smt- we support only numbers for now: " + varName);
+            else{
+                if (tokens.length > 2 && isMathExpression(tokens)) {
+                    num = strToDouble(tokens[1]);
+                    double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), num);
+                    System.out.println(result);
+                }
+                else
+                    System.out.println(tokens[1]);
+            }
+
         }
     }
+    
+    private double strToDouble(String string) {
+        return Double.parseDouble(string);
+    }
 
+    private boolean isNum(String value) {
+        try {
+          Float.parseFloat(value);
+          return true;
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
+      }
+      
     private void executeIf(String[] tokens) {
         if (tokens.length < 3) {
             System.out.println("Invalid if statement: " + String.join(" ", tokens));
@@ -157,19 +185,19 @@ public class Interpreter {
         return false;
     }
     
-    private int evaluateMathExpression(String[] expression, int initialValue) {
-        int result = initialValue;
+    private double evaluateMathExpression(String[] expression, double initialValue) {
+        double result = initialValue;
         String operator = null;
         for (String token : expression) {
             if (token.matches("[+\\-*/]")) {
                 operator = token;
             } else {
-                int operand;
+                double operand;
                 if (variables.containsKey(token)) {
                     operand = variables.get(token);
                 } else {
                     try {
-                        operand = Integer.parseInt(token);
+                        operand = Double.parseDouble(token);
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid operand: " + token);
                         return 0;
