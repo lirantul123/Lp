@@ -21,7 +21,7 @@ Conditional statements (if):
 Functions (limited definition): 
     You can define functions (fun) with arguments, but currently, it doesn't support function calls or implementing function logic within the definition.
 
-Clear screen (limited):
+Clear screen (limited) & exit:
     It offers a basic "clear screen" functionality by printing multiple newlines, although it doesn't truly clear the terminal buffer.
 
 
@@ -45,4 +45,3 @@ Overall:
     It demonstrates concepts like variable handling, basic math operations, conditional statements,
     and function definition (partially). With further development,
     it could become a more powerful tool for executing more complex code.
-    
