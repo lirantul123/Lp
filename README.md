@@ -1,25 +1,16 @@
-# L++
+# L+
 
-## EXAMPLE CODE:
+## EXAMPLE CODE
 
-### // Functions - 
-#### fun sub % x , y % $
-#### (At least one space) return x + y 
-#### $
+### // Functions:
+#### fun  sub % x , y % $ return x - y $
+#### fun  incr % x , y % $ return x + y $
 
-#### fun incr % x , y % $
-#### (At least one space) return x + y 
-#### $
-
-### // Variables announcemnet & changing - 
+### // Variables announcemnet & changing
 #### var a = 5
 #### var b = 3
 #### a = 6
 
-### // If statments - 
-#### if a > b $
-#### (At least one space) print sub %  a , b %
-#### $
-#### else $
-#### (At least one space) print incr %  a , b %
-#### $
+### // If statments
+#### if a > b $ print sub %  a , b % $
+#### if a < b $ print incr %  a , b % $

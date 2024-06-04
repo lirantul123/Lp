@@ -16,12 +16,28 @@ public class Interpreter {
     public void execute() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter your code below. Type 'execute' on a new line to run the code:\n>> ");
-        String line;
+        String line; boolean cls = false;
         while (true) {
+            if (cls){
+                System.out.print(">> ");
+                cls = false;
+            }
+
             line = scanner.nextLine();
-            if (line.trim().equals("execute")) {
+            if (line.trim().equals("exit")) {
                 break;
             }
+            if (line.trim().equals("clear")) {
+                if (line.trim().equals("clear")) {
+                    for (int i = 0; i < 50; i++) {// emptying
+                        System.out.println();
+                    }
+                }
+                cls = true;
+            }
+            if (cls)
+                continue;
+
             runCode(line);
             System.out.print(">> ");
         }
@@ -45,7 +61,7 @@ public class Interpreter {
                 executeVarDeclaration(tokens);
                 break;
             case "print":
-            case "PRINT": 
+            case "PRINT":
                 executePrint(tokens);
                 break;
             case "if":
@@ -64,12 +80,12 @@ public class Interpreter {
     private void executeFunction(String[] tokens) {
         String functionName = tokens[1];
         List<String> functionVariables = new ArrayList<>();
-    
+
         // Start from tokens[3], since tokens[2] is "%"
         for (int i = 3; i < tokens.length; i++) {
             String token = tokens[i];
-            if (token.equals("%")) 
-                break; 
+            if (token.equals("%"))
+                break;
             if (token.equals(","))
                 continue;
             functionVariables.add(token);
@@ -81,7 +97,7 @@ public class Interpreter {
         // }
         functions.put(functionName, functionVariables);
     }
-                        
+
     private void executeVarDeclaration(String[] tokens) {
         if (tokens.length < 4 || !tokens[2].equals("=")) {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
@@ -127,31 +143,31 @@ public class Interpreter {
 
         }
     }
-    
+
     private double strToDouble(String string) {
         return Double.parseDouble(string);
     }
 
     private boolean isNum(String value) {
         try {
-          Float.parseFloat(value);
-          return true;
+            Float.parseFloat(value);
+            return true;
 
         } catch (NumberFormatException e) {
             return false;
         }
-      }
-      
+    }
+
     private void executeIf(String[] tokens) {
         if (tokens.length < 3) {
             System.out.println("Invalid if statement: " + String.join(" ", tokens));
             return;
         }
-        
+
         String operator = tokens[1];
         int operand1;
         int operand2;
-        
+
         try {
             operand1 = Integer.parseInt(tokens[0]);
             operand2 = Integer.parseInt(tokens[2]);
@@ -159,7 +175,7 @@ public class Interpreter {
             System.out.println("Invalid operands for operation: " + String.join(" ", tokens));
             return;
         }
-        
+
         switch (operator) {
             case "<":
                 System.out.println("Result: " + (operand1 < operand2));
@@ -184,7 +200,7 @@ public class Interpreter {
         }
         return false;
     }
-    
+
     private double evaluateMathExpression(String[] expression, double initialValue) {
         double result = initialValue;
         String operator = null;
@@ -228,7 +244,7 @@ public class Interpreter {
         }
         return result;
     }
-        
+
     public static void main(String[] args) {
         Interpreter interpreter = new Interpreter();
         interpreter.execute();
