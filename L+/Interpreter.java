@@ -15,7 +15,7 @@ public class Interpreter {
 
     public void execute() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter your code below. Type 'execute' on a new line to run the code:\n>> ");
+        System.out.print("Enter your code below. Type 'clear' to clear the screen, 'exit' on a new line to exit:\n>> ");
         String line; boolean cls = false;
         while (true) {
             if (cls){
