@@ -13,7 +13,7 @@ public class Interpreter {
         this.functions = new HashMap<>();
     }
 
-    public void execute() {
+    public void execute() throws Exception {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter your code below. Type 'clear' to clear the screen, 'exit' on a new line to exit:\n>> ");
         String line; boolean cls = false;
@@ -43,14 +43,14 @@ public class Interpreter {
         }
     }
 
-    private void runCode(String code) {
+    private void runCode(String code) throws Exception {
         String[] lines = code.split("\n");
         for (String line : lines) {
             executeLine(line.trim());
         }
     }
 
-    private void executeLine(String line) {
+    private void executeLine(String line) throws Exception {
         if (line.isEmpty()) {
             return;  // Skip empty lines
         }
@@ -77,27 +77,55 @@ public class Interpreter {
         }
     }
 
-    private void executeFunction(String[] tokens) {
+    private void executeFunction(String[] tokens) throws Exception {
+        // Ensure there are enough tokens to avoid ArrayIndexOutOfBoundsException
+        if (tokens.length < 3) {
+            throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
+        }
+    
         String functionName = tokens[1];
         List<String> functionVariables = new ArrayList<>();
-
+        boolean alsoError = true;
+    
+        // Check if the third token is "%"
+        if (!tokens[2].equals("%")) {
+            throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
+        }
+    
         // Start from tokens[3], since tokens[2] is "%"
         for (int i = 3; i < tokens.length; i++) {
             String token = tokens[i];
-            if (token.equals("%"))
+    
+            if (token.equals("%")) {
+                alsoError = false;
                 break;
-            if (token.equals(","))
+            }
+            if (token.equals(",")) {
                 continue;
+            }
+            if (!findIfNumberOnly(token)) {
+                throw new Exception("Mismatching Argument: variables cannot be only numbers");
+            }
+    
             functionVariables.add(token);
         }
-        // // Print the contents of functionVariables
-        // System.out.println("Function Variables for " + functionName + ":");
-        // for (String var : functionVariables) {
-        //     System.out.println(var);
-        // }
+        if (alsoError) {
+            throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
+        }
+    
+        // Print the contents of functionVariables
+        System.out.println("Function Variables for " + functionName + ":");
+        for (String var : functionVariables) {
+            System.out.println(var);
+        }
+    
         functions.put(functionName, functionVariables);
     }
-
+    
+    private static boolean findIfNumberOnly(String curr) {
+        return curr != null && curr.matches("\\d+");
+    }
+        
     private void executeVarDeclaration(String[] tokens) {
         if (tokens.length < 4 || !tokens[2].equals("=")) {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
@@ -245,7 +273,7 @@ public class Interpreter {
         return result;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Interpreter interpreter = new Interpreter();
         interpreter.execute();
     }
