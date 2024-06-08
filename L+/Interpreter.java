@@ -1,12 +1,15 @@
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Interpreter {
     private HashMap<String, Integer> variables;
-    private HashMap<String, List<String>> functions;
+    // [fun_nmae], [variables, content]
+    private HashMap<String, Map.Entry<List<String>, List<String>>> functions;
 
     public Interpreter() {
         this.variables = new HashMap<>();
@@ -82,48 +85,62 @@ public class Interpreter {
         if (tokens.length < 3) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
         }
-    
+
         String functionName = tokens[1];
         List<String> functionVariables = new ArrayList<>();
-        boolean alsoError = true;
-    
+        List<String> functionContent = new ArrayList<>();
+
         // Check if the third token is "%"
         if (!tokens[2].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
         }
-    
+
         // Start from tokens[3], since tokens[2] is "%"
-        for (int i = 3; i < tokens.length; i++) {
+        int i = 3;
+        while (i < tokens.length && !tokens[i].equals("%")) {
             String token = tokens[i];
-    
-            if (token.equals("%")) {
-                alsoError = false;
-                break;
-            }
-            if (token.equals(",")) {
-                continue;
-            }
+
             if (!findIfNumberOnly(token)) {
                 throw new Exception("Mismatching Argument: variables cannot be only numbers");
             }
-    
+
             functionVariables.add(token);
+            i++;
         }
-        if (alsoError) {
-            throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
+
+        if (i >= tokens.length || !tokens[i].equals("%")) {
+            throw new Exception("Syntax Error: Expected '%' at position " + i + " in the token array.");
         }
-    
-        // Print the contents of functionVariables
-        System.out.println("Function Variables for " + functionName + ":");
-        for (String var : functionVariables) {
-            System.out.println(var);
+
+        // Move to the next token after the second '%'
+        i++;
+        if (i >= tokens.length || !tokens[i].equals("$")) {
+            throw new Exception("Syntax Error: Expected '$' after token[" + i + "] in the token array.");
         }
-    
-        functions.put(functionName, functionVariables);
+
+        // Start from tokens[i+1], since tokens[i] is "$"
+        i++;
+        while (i < tokens.length && !tokens[i].equals("$")) {
+            String token = tokens[i];
+            functionContent.add(token);
+            i++;
+        }
+
+        if (i >= tokens.length || !tokens[i].equals("$")) {
+            throw new Exception("Syntax Error: Expected closing '$' in the token array.");
+        }
+
+        // System.out.println("Function Content:");
+        // for (String content : functionContent) {
+        //     System.out.println(content);
+        // }
+
+        Map.Entry<List<String>, List<String>> entry = new AbstractMap.SimpleEntry<>(functionVariables, functionContent);
+        functions.put(functionName, entry);
     }
-    
-    private static boolean findIfNumberOnly(String curr) {
-        return curr != null && curr.matches("\\d+");
+
+    private boolean findIfNumberOnly(String token) {
+        return !token.matches("\\d+");
     }
         
     private void executeVarDeclaration(String[] tokens) {
