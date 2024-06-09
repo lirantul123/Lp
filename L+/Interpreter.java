@@ -55,7 +55,7 @@ public class Interpreter {
 
     private void executeLine(String line) throws Exception {
         if (line.isEmpty()) {
-            return;  // Skip empty lines
+            return;
         }
         String[] tokens = line.split("\\s+");
         switch (tokens[0]) {
@@ -76,10 +76,11 @@ public class Interpreter {
                 executeFunction(tokens);
                 break;
             default:
+                // <fun_name> % <variables[,]> %
                 executeExistFunction(tokens);
         }
     }
- 
+    // TODO: Execute funtion's content
     private static void executeExistFunction(String[] tokens) throws Exception {
         String functionName = tokens[0];
         if (functions.containsKey(functionName)) {
@@ -112,8 +113,8 @@ public class Interpreter {
         }
     }
 
+    // fun <fun_name> % <variables[,]> % $ <content[;]> $ 
     private void executeFunction(String[] tokens) throws Exception {
-        // Ensure there are enough tokens to avoid ArrayIndexOutOfBoundsException
         if (tokens.length < 3) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
         }
@@ -122,12 +123,10 @@ public class Interpreter {
         List<String> functionVariables = new ArrayList<>();
         List<String> functionContent = new ArrayList<>();
     
-        // Check if the third token is "%"
         if (!tokens[2].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
         }
     
-        // Start from tokens[3], since tokens[2] is "%"
         int i = 3;
         while (i < tokens.length && !tokens[i].equals("%")) {
             String token = tokens[i];
@@ -142,14 +141,11 @@ public class Interpreter {
         if (i >= tokens.length || !tokens[i].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' at position " + i + " in the token array.");
         }
-        // Move to the next token after the second '%'
         i++;
         if (i >= tokens.length || !tokens[i].equals("$")) {
             throw new Exception("Syntax Error: Expected '$' after token[" + i + "] in the token array.");
         }
-        // Start from tokens[i+1], since tokens[i] is "$"
         i++;
-        // Join the remaining tokens into a single string
         StringBuilder contentBuilder = new StringBuilder();
         while (i < tokens.length && !tokens[i].equals("$")) {
             contentBuilder.append(tokens[i]).append(" ");
@@ -158,7 +154,6 @@ public class Interpreter {
         if (i >= tokens.length || !tokens[i].equals("$")) {
             throw new Exception("Syntax Error: Expected closing '$' in the token array.");
         }
-        // Split the content by semicolons to get individual commands
         String[] commands = contentBuilder.toString().split(";");
         for (String command : commands) {
             if (!command.trim().isEmpty()) {
@@ -194,7 +189,7 @@ public class Interpreter {
         }
         String varName = tokens[1];
 
-        if (variables.containsKey(varName)) {// needs to be a num for now
+        if (variables.containsKey(varName)) {
             int varValue = variables.get(varName);
             if (tokens.length > 2 && isMathExpression(tokens)) {
                 double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
