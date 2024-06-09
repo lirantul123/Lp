@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Interpreter {
     private HashMap<String, Integer> variables;
     // [fun_nmae], [variables, content]
-    private HashMap<String, Map.Entry<List<String>, List<String>>> functions;
+    private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
 
     public Interpreter() {
         this.variables = new HashMap<>();
@@ -76,7 +76,39 @@ public class Interpreter {
                 executeFunction(tokens);
                 break;
             default:
-                System.out.println("Invalid statement: " + line);
+                executeExistFunction(tokens);
+        }
+    }
+ 
+    private static void executeExistFunction(String[] tokens) throws Exception {
+        String functionName = tokens[0];
+        if (functions.containsKey(functionName)) {
+            executeUserFunction(functionName, tokens);
+        } else {
+            System.out.println("Invalid statement or function not found: " + functionName);
+        }
+    }
+
+    private static void executeUserFunction(String functionName, String[] tokens) throws Exception {
+        if (tokens.length < 3 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("%")) {
+            throw new Exception("Syntax Error: Expected '%' to surround the function variables.");
+        }
+
+        String[] variableTokens = String.join(" ", Arrays.copyOfRange(tokens, 2, tokens.length - 1)).split("\\s*,\\s*");
+        List<String> providedVariables = Arrays.asList(variableTokens);
+
+        Map.Entry<List<String>, List<String>> function = functions.get(functionName);
+        List<String> functionVariables = function.getKey();
+        List<String> functionContent = function.getValue();
+
+        // later to check types, but because it is python minus, maybe
+        if (providedVariables.size() != functionVariables.size()) {
+            throw new Exception("Mismatching Argument: The number of provided variables does not match the function's variables.");
+        }
+
+        System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
+        for (String content : functionContent) {
+            System.out.println(content);
         }
     }
 
@@ -85,64 +117,61 @@ public class Interpreter {
         if (tokens.length < 3) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
         }
-
+    
         String functionName = tokens[1];
         List<String> functionVariables = new ArrayList<>();
         List<String> functionContent = new ArrayList<>();
-
+    
         // Check if the third token is "%"
         if (!tokens[2].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
         }
-
+    
         // Start from tokens[3], since tokens[2] is "%"
         int i = 3;
         while (i < tokens.length && !tokens[i].equals("%")) {
             String token = tokens[i];
-
+    
             if (!findIfNumberOnly(token)) {
                 throw new Exception("Mismatching Argument: variables cannot be only numbers");
             }
-
-            functionVariables.add(token);
+            if (!token.equals(","))
+                functionVariables.add(token);
             i++;
         }
-
         if (i >= tokens.length || !tokens[i].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' at position " + i + " in the token array.");
         }
-
         // Move to the next token after the second '%'
         i++;
         if (i >= tokens.length || !tokens[i].equals("$")) {
             throw new Exception("Syntax Error: Expected '$' after token[" + i + "] in the token array.");
         }
-
         // Start from tokens[i+1], since tokens[i] is "$"
         i++;
+        // Join the remaining tokens into a single string
+        StringBuilder contentBuilder = new StringBuilder();
         while (i < tokens.length && !tokens[i].equals("$")) {
-            String token = tokens[i];
-            functionContent.add(token);
+            contentBuilder.append(tokens[i]).append(" ");
             i++;
         }
-
         if (i >= tokens.length || !tokens[i].equals("$")) {
             throw new Exception("Syntax Error: Expected closing '$' in the token array.");
         }
-
-        // System.out.println("Function Content:");
-        // for (String content : functionContent) {
-        //     System.out.println(content);
-        // }
-
+        // Split the content by semicolons to get individual commands
+        String[] commands = contentBuilder.toString().split(";");
+        for (String command : commands) {
+            if (!command.trim().isEmpty()) {
+                functionContent.add(command.trim());
+            }
+        }
         Map.Entry<List<String>, List<String>> entry = new AbstractMap.SimpleEntry<>(functionVariables, functionContent);
         functions.put(functionName, entry);
     }
-
     private boolean findIfNumberOnly(String token) {
         return !token.matches("\\d+");
     }
-        
+      
     private void executeVarDeclaration(String[] tokens) {
         if (tokens.length < 4 || !tokens[2].equals("=")) {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
