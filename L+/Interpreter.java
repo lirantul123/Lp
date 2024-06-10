@@ -7,53 +7,55 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Interpreter {
-    private HashMap<String, Integer> variables;
+    private static HashMap<String, Integer> variables;
     // [fun_nmae], [variables, content]
     private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
 
     public Interpreter() {
-        this.variables = new HashMap<>();
-        this.functions = new HashMap<>();
+        Interpreter.variables = new HashMap<>();
+        Interpreter.functions = new HashMap<>();
     }
 
     public void execute() throws Exception {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter your code below. Type 'clear' to clear the screen, 'exit' on a new line to exit:\n>> ");
-        String line; boolean cls = false;
-        while (true) {
-            if (cls){
-                System.out.print(">> ");
-                cls = false;
-            }
-
-            line = scanner.nextLine();
-            if (line.trim().equals("exit")) {
-                break;
-            }
-            if (line.trim().equals("clear")) {
-                if (line.trim().equals("clear")) {
-                    for (int i = 0; i < 50; i++) {// emptying
-                        System.out.println();
-                    }
+        try (Scanner scanner = new Scanner(System.in)) {
+            
+            System.out.print("Enter your code below. Type 'clear' to clear the screen, 'exit' on a new line to exit:\n>> ");
+            String line; boolean cls = false;
+            while (true) {
+                if (cls){
+                    System.out.print(">> ");
+                    cls = false;
                 }
-                cls = true;
-            }
-            if (cls)
-                continue;
 
-            runCode(line);
-            System.out.print(">> ");
+                line = scanner.nextLine();
+                if (line.trim().equals("exit")) {
+                    break;
+                }
+                if (line.trim().equals("clear")) {
+                    if (line.trim().equals("clear")) {
+                        for (int i = 0; i < 50; i++) {// emptying
+                            System.out.println();
+                        }
+                    }
+                    cls = true;
+                }
+                if (cls)
+                    continue;
+
+                runCode(line);
+                System.out.print(">> ");
+            }
         }
     }
 
     private void runCode(String code) throws Exception {
         String[] lines = code.split("\n");
         for (String line : lines) {
-            executeLine(line.trim());
+            executeLine(line.trim(), false);
         }
     }
 
-    private void executeLine(String line) throws Exception {
+    private static void executeLine(String line, boolean innerFun)  throws Exception {
         if (line.isEmpty()) {
             return;
         }
@@ -73,8 +75,11 @@ public class Interpreter {
                 break;
             case "fun":
             case "FUN":
-                executeFunction(tokens);
-                break;
+                if (!innerFun){
+                    executeFunction(tokens);
+                    break;
+                }
+                throw new Exception("Syntax Error: Function defenition cannot be inside one.");
             default:
                 // <fun_name> % <variables[,]> %
                 executeExistFunction(tokens);
@@ -89,7 +94,6 @@ public class Interpreter {
             System.out.println("Invalid statement or function not found: " + functionName);
         }
     }
-
     private static void executeUserFunction(String functionName, String[] tokens) throws Exception {
         if (tokens.length < 3 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' to surround the function variables.");
@@ -102,19 +106,19 @@ public class Interpreter {
         List<String> functionVariables = function.getKey();
         List<String> functionContent = function.getValue();
 
-        // later to check types, but because it is python minus, maybe
+        // later to check types, but because it is python minus, maybe not
         if (providedVariables.size() != functionVariables.size()) {
             throw new Exception("Mismatching Argument: The number of provided variables does not match the function's variables.");
         }
 
         System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
         for (String content : functionContent) {
-            System.out.println(content);
+            executeLine(content, true);// Run on the function's content
         }
     }
 
     // fun <fun_name> % <variables[,]> % $ <content[;]> $ 
-    private void executeFunction(String[] tokens) throws Exception {
+    private static void executeFunction(String[] tokens) throws Exception {
         if (tokens.length < 3) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
         }
@@ -163,11 +167,11 @@ public class Interpreter {
         Map.Entry<List<String>, List<String>> entry = new AbstractMap.SimpleEntry<>(functionVariables, functionContent);
         functions.put(functionName, entry);
     }
-    private boolean findIfNumberOnly(String token) {
+    private static boolean findIfNumberOnly(String token) {
         return !token.matches("\\d+");
     }
       
-    private void executeVarDeclaration(String[] tokens) {
+    private static void executeVarDeclaration(String[] tokens) {
         if (tokens.length < 4 || !tokens[2].equals("=")) {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
             return;
@@ -181,7 +185,7 @@ public class Interpreter {
         }
     }
 
-    private void executePrint(String[] tokens) {
+    private static void executePrint(String[] tokens) {
         double num;
         if (tokens.length < 2) {
             System.out.println("Invalid print statement: " + String.join(" ", tokens));
@@ -198,7 +202,7 @@ public class Interpreter {
                 System.out.println(varValue);
             }
         } else {
-            if (!isNum(tokens[1]))
+            if (!isNum(tokens[1]))// TODO: getting variables into the function and executing on them stuff
                 System.out.println("smt- we support only numbers for now: " + varName);
             else{
                 if (tokens.length > 2 && isMathExpression(tokens)) {
@@ -213,11 +217,11 @@ public class Interpreter {
         }
     }
 
-    private double strToDouble(String string) {
+    private static double strToDouble(String string) {
         return Double.parseDouble(string);
     }
 
-    private boolean isNum(String value) {
+    private static boolean isNum(String value) {
         try {
             Float.parseFloat(value);
             return true;
@@ -227,7 +231,7 @@ public class Interpreter {
         }
     }
 
-    private void executeIf(String[] tokens) {
+    private static void executeIf(String[] tokens) {
         if (tokens.length < 3) {
             System.out.println("Invalid if statement: " + String.join(" ", tokens));
             return;
@@ -261,7 +265,7 @@ public class Interpreter {
         }
     }
 
-    private boolean isMathExpression(String[] tokens) {
+    private static boolean isMathExpression(String[] tokens) {
         for (String token : tokens) {
             if (token.matches("[+\\-*/]")) {
                 return true;
@@ -270,7 +274,7 @@ public class Interpreter {
         return false;
     }
 
-    private double evaluateMathExpression(String[] expression, double initialValue) {
+    private static double evaluateMathExpression(String[] expression, double initialValue) {
         double result = initialValue;
         String operator = null;
         for (String token : expression) {
