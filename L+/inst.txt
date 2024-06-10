@@ -27,7 +27,7 @@ Clear screen (limited) & exit:
 
 What it cannot do yet:
 Data types beyond integers:
-    Currently, it only supports integer variables and values. Operations involving floating-point numbers (decimals) wouldn't work.
+    Currently, it only supports integer(&~double) variables and values. Operations involving floating-point numbers (decimals) wouldn't work.
 
 Complex data structures:    
     It doesn't handle data structures like arrays, strings, or objects.
