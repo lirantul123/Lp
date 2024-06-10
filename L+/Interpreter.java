@@ -85,7 +85,7 @@ public class Interpreter {
                 executeExistFunction(tokens);
         }
     }
-    // TODO: Execute funtion's content
+
     private static void executeExistFunction(String[] tokens) throws Exception {
         String functionName = tokens[0];
         if (functions.containsKey(functionName)) {
@@ -113,7 +113,7 @@ public class Interpreter {
 
         System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
         for (String content : functionContent) {
-            executeLine(content, true);// Run on the function's content
+            executeLine(content, true);// Run on the function's content and executing them
         }
     }
 
