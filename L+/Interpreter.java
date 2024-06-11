@@ -57,23 +57,23 @@ public class Interpreter {
 
     private static void executeLine(String line, boolean innerFun)  throws Exception {
         if (line.isEmpty()) {
-            return;
+            return;// empty lines is okay 𓆝 𓆟 𓆞 𓆝 𓆟 
         }
         String[] tokens = line.split("\\s+");
         switch (tokens[0]) {
-            case "var":
+            case "var":// variable
             case "VAR":
                 executeVarDeclaration(tokens);
                 break;
-            case "print":
+            case "print":// print
             case "PRINT":
                 executePrint(tokens);
                 break;
-            case "if":
+            case "if":// if
             case "IF":
                 executeIf(Arrays.copyOfRange(tokens, 1, tokens.length));
                 break;
-            case "fun":
+            case "fun":// function
             case "FUN":
                 if (!innerFun){
                     executeFunction(tokens);
