@@ -80,7 +80,7 @@ public class Interpreter {
                     break;
                 }
                 throw new Exception("Syntax Error: Function defenition cannot be inside one.");
-            case "/":// comments
+            case "/":// comment
                 break;
             default:
                 // <fun_name> % <variables[,]> %
