@@ -1,4 +1,4 @@
-This project implements a basic interpreter that can execute a limited set of instructions written in a custom language. 
+This project implements a basic interpreter that can execute a limited set of instructions written in a custom language(L+). 
 Here's a breakdown of its functionalities and limitations:
 
 
@@ -13,16 +13,19 @@ Printing:
     You can use the print statement to display the value of a variable or the result of a math expression.
 
 Simple math expressions:
-    It can evaluate basic math expressions involving addition (+), subtraction (-), multiplication (*), and division (/) using variables or numbers.
+    It can evaluate basic math expressions involving addition ('+'), subtraction ('-'), multiplication ('*'), and division ('/') using variables or numbers.
 
 Conditional statements (if):
-    It supports if statements to execute code blocks based on conditions like greater than (>), less than (<), or equal to (=) comparisons between variables or numbers.
+    It supports if statements to execute code blocks based on conditions like greater than ('>'), less than ('<'), or equal to ('=') comparisons between variables or numbers.
 
 Functions (limited definition): 
     You can define functions (fun) with arguments, but currently, it doesn't support function calls or implementing function logic within the definition.
 
 Clear screen (limited) & exit:
     It offers a basic "clear screen" functionality by printing multiple newlines, although it doesn't truly clear the terminal buffer.
+
+Comment argument:
+    You can decide to write sentance as a comment, and it will not be executed('/').
 
 
 What it cannot do yet:

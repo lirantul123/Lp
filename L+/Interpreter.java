@@ -80,6 +80,8 @@ public class Interpreter {
                     break;
                 }
                 throw new Exception("Syntax Error: Function defenition cannot be inside one.");
+            case "/":// comments
+                break;
             default:
                 // <fun_name> % <variables[,]> %
                 executeExistFunction(tokens);
@@ -113,7 +115,7 @@ public class Interpreter {
 
         System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
         for (String content : functionContent) {
-            executeLine(content, true);// Run on the function's content and executing them
+            executeLine(content, true);// Run on the function's content and executing it
         }
     }
 
@@ -306,7 +308,7 @@ public class Interpreter {
                         if (operand != 0) {
                             result /= operand;
                         } else {
-                            System.out.println("Division by zero!");
+                            throw new Error("Exception: Division by zero!");
                         }
                         break;
                     default:
