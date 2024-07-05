@@ -6,9 +6,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+// TODO: ++(+1), modify the enum
 public class Interpreter {
+    public enum FAMWORDS {
+        var,
+        perSign,
+        dollSign,
+        pp,
+        ifWord,
+        whileWord,
+        forWord,
+        funWord,
+        printWord,
+        clearWord,
+        exitWord
+    }    
+    
     private static HashMap<String, Integer> variables;
-    // [fun_nmae], [variables, content]
+    // [fun_name], [variables, content]
     private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
 
     public Interpreter() {
@@ -18,7 +33,6 @@ public class Interpreter {
 
     public void execute() throws Exception {
         try (Scanner scanner = new Scanner(System.in)) {
-            
             System.out.print("Enter your code below. Type 'clear' to clear the screen, 'exit' on a new line to exit:\n>> ");
             String line; boolean cls = false;
             while (true) {
@@ -79,12 +93,102 @@ public class Interpreter {
                     executeFunction(tokens);
                     break;
                 }
-                throw new Exception("Syntax Error: Function defenition cannot be inside one.");
+                throw new Exception("Syntax Error: Function definition cannot be inside one.");
+            case "while":// while
+            case "WHILE":
+                executeWhile(tokens);
+                break;
+            case "for":// for
+            case "For":
+                executeFor(tokens);
+                break;
+    
             case "/":// comment
                 break;
             default:
                 // <fun_name> % <variables[,]> %
                 executeExistFunction(tokens);
+        }
+    }
+
+    // var a = 1; while % a < 2 % $ print a; a ++; print a; $
+    private static void executeWhile(String[] tokens) throws Exception {
+        if (tokens.length < 5 || !tokens[2].equals("%") || !tokens[tokens.length - 1].equals("$")) {
+            throw new Exception("Syntax Error: Expected '%' and '$' for while loop.");
+        }
+    
+        String condition = tokens[3];
+        String[] conditionParts = condition.split("\\s+");
+        
+        if (conditionParts.length != 3) {
+            throw new Exception("Syntax Error: Invalid condition in while loop.");
+        }
+    
+        StringBuilder bodyBuilder = new StringBuilder();
+        for (int i = 4; i < tokens.length - 1; i++) {
+            bodyBuilder.append(tokens[i]).append(" ");
+        }
+        String[] bodyLines = bodyBuilder.toString().split(";");
+    
+        while (evaluateCondition(conditionParts[0], conditionParts[1], conditionParts[2])) {
+            for (String line : bodyLines) {
+                executeLine(line.trim(), false);
+            }
+        }
+    }
+    
+    // for Conditions
+    private static boolean evaluateCondition(String leftOperand, String operator, String rightOperand) {
+        int leftValue = getValue(leftOperand);
+        int rightValue = getValue(rightOperand);
+
+        switch (operator) {
+            case "<":
+                return leftValue < rightValue;
+            case ">":
+                return leftValue > rightValue;
+            case "==":
+                return leftValue == rightValue;
+            case "!=":
+                return leftValue != rightValue;
+            case "<=":
+                return leftValue <= rightValue;
+            case ">=":
+                return leftValue >= rightValue;
+            default:
+                throw new IllegalArgumentException("Invalid operator in condition: " + operator);
+        }
+    }
+    private static int getValue(String operand) {
+        if (variables.containsKey(operand)) {
+            return variables.get(operand);
+        }
+        try {
+            return Integer.parseInt(operand);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid operand: " + operand);
+        }
+    }
+
+    private static void executeFor(String[] tokens) throws Exception {
+        if (tokens.length < 7 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("$")) {
+            throw new Exception("Syntax Error: Expected '%' and '$' for for loop.");
+        }
+
+        String varName = tokens[2];
+        int start = Integer.parseInt(tokens[3]);
+        int end = Integer.parseInt(tokens[5]);
+        StringBuilder bodyBuilder = new StringBuilder();
+        for (int i = 7; i < tokens.length - 1; i++) {
+            bodyBuilder.append(tokens[i]).append(" ");
+        }
+        String[] bodyLines = bodyBuilder.toString().split(";");
+
+        for (int i = start; i < end; i++) {
+            variables.put(varName, i);
+            for (String line : bodyLines) {
+                executeLine(line.trim(), false);
+            }
         }
     }
 
@@ -96,6 +200,7 @@ public class Interpreter {
             System.out.println("Invalid statement or function not found: " + functionName);
         }
     }
+
     private static void executeUserFunction(String functionName, String[] tokens) throws Exception {
         if (tokens.length < 3 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' to surround the function variables.");
@@ -108,35 +213,33 @@ public class Interpreter {
         List<String> functionVariables = function.getKey();
         List<String> functionContent = function.getValue();
 
-        // later to check types, but because it is python minus, maybe not
         if (providedVariables.size() != functionVariables.size()) {
             throw new Exception("Mismatching Argument: The number of provided variables does not match the function's variables.");
         }
 
         System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
         for (String content : functionContent) {
-            executeLine(content, true);// Run on the function's content and executing it
+            executeLine(content, true);
         }
     }
 
-    // fun <fun_name> % <variables[,]> % $ <content[;]> $ 
     private static void executeFunction(String[] tokens) throws Exception {
         if (tokens.length < 3) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
         }
-    
+
         String functionName = tokens[1];
         List<String> functionVariables = new ArrayList<>();
         List<String> functionContent = new ArrayList<>();
-    
+
         if (!tokens[2].equals("%")) {
             throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
         }
-    
+
         int i = 3;
         while (i < tokens.length && !tokens[i].equals("%")) {
             String token = tokens[i];
-    
+
             if (!findIfNumberOnly(token)) {
                 throw new Exception("Mismatching Argument: variables cannot be only numbers");
             }
@@ -169,10 +272,11 @@ public class Interpreter {
         Map.Entry<List<String>, List<String>> entry = new AbstractMap.SimpleEntry<>(functionVariables, functionContent);
         functions.put(functionName, entry);
     }
+
     private static boolean findIfNumberOnly(String token) {
         return !token.matches("\\d+");
     }
-      
+
     private static void executeVarDeclaration(String[] tokens) {
         if (tokens.length < 4 || !tokens[2].equals("=")) {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
