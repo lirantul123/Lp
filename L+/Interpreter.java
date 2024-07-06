@@ -8,11 +8,13 @@ import java.util.Scanner;
 
 // TODO: ++(+1), modify the enum
 public class Interpreter {
+    public static final int incredecreValue = 1;
     public enum FAMWORDS {
         var,
         perSign,
         dollSign,
-        pp,
+        pp,// ++
+        mm,// --
         ifWord,
         whileWord,
         forWord,
@@ -90,8 +92,7 @@ public class Interpreter {
             case "fun":// function
             case "FUN":
                 if (!innerFun){
-                    executeFunction(tokens);
-                    break;
+                        executeFunction(tokens);
                 }
                 throw new Exception("Syntax Error: Function definition cannot be inside one.");
             case "while":// while
@@ -102,14 +103,53 @@ public class Interpreter {
             case "For":
                 executeFor(tokens);
                 break;
-    
             case "/":// comment
                 break;
             default:
                 // <fun_name> % <variables[,]> %
-                executeExistFunction(tokens);
+                if (!tokens[1].equals("++") && !tokens[1].equals("--"))
+                    executeExistFunction(tokens);
+                else{
+                    if (tokens[1].equals("++")){
+                        incrementVar(tokens);// increment by 1
+                    }
+                    else
+                        decrementVar(tokens);// decrement by 1
+                }
         }
     }
+
+    private static void incrementVar(String[] tokens) {
+        if (tokens.length < 2) {
+            System.out.println("Invalid decrement statement: " + String.join(" ", tokens));
+            return;
+        }
+        String varName = tokens[0];
+
+        if (variables.containsKey(varName)) {
+            int currentValue = variables.get(varName);
+            variables.put(varName, currentValue + incredecreValue);
+        } else {
+            System.out.println("Variable not found: " + varName);
+        }
+
+    }
+
+    private static void decrementVar(String[] tokens) {
+        if (tokens.length < 2) {
+            System.out.println("Invalid decrement statement: " + String.join(" ", tokens));
+            return;
+        }
+        String varName = tokens[0];
+
+        if (variables.containsKey(varName)) {
+            int currentValue = variables.get(varName);
+            variables.put(varName, currentValue - incredecreValue);
+        } else {
+            System.out.println("Variable not found: " + varName);
+        }
+    }
+
 
     // var a = 1; while % a < 2 % $ print a; a ++; print a; $
     private static void executeWhile(String[] tokens) throws Exception {
