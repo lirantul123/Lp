@@ -91,15 +91,15 @@ public class Interpreter {
                 break;
             case "fun":// function
             case "FUN":
-                if (!innerFun){
-                        executeFunction(tokens);
-                }
-                throw new Exception("Syntax Error: Function definition cannot be inside one.");
-            case "while":// while
+                if (!innerFun)
+                    executeFunction(tokens);
+                else
+                    throw new Exception("Syntax Error: Function definition cannot be inside one.");
+            case "while":// while - SHIT FOR NOW
             case "WHILE":
                 executeWhile(tokens);
                 break;
-            case "for":// for
+            case "for":// for - SHIT FOR NOW
             case "For":
                 executeFor(tokens);
                 break;
