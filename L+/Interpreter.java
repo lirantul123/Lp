@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+// TODO:  hello % x %(only if 'x' was declared) or hello % 55 %(only number)
 // TODO: ++(+1), modify the enum
 public class Interpreter {
     public static final int incredecreValue = 1;
@@ -47,12 +48,8 @@ public class Interpreter {
                 if (line.trim().equals("exit")) {
                     break;
                 }
-                if (line.trim().equals("clear")) {
-                    if (line.trim().equals("clear")) {
-                        for (int i = 0; i < 50; i++) {// emptying
-                            System.out.println();
-                        }
-                    }
+                if (line.trim().equals("clear") || line.trim().equals("cls")) {
+                    cleanScreen();
                     cls = true;
                 }
                 if (cls)
@@ -64,6 +61,10 @@ public class Interpreter {
         }
     }
 
+    private void cleanScreen() {
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+    }
     private void runCode(String code) throws Exception {
         String[] lines = code.split("\n");
         for (String line : lines) {
@@ -95,14 +96,14 @@ public class Interpreter {
                     executeFunction(tokens);
                 else
                     throw new Exception("Syntax Error: Function definition cannot be inside one.");
-            case "while":// while - SHIT FOR NOW
-            case "WHILE":
-                executeWhile(tokens);
-                break;
-            case "for":// for - SHIT FOR NOW
-            case "For":
-                executeFor(tokens);
-                break;
+            // case "while":// while - SHIT FOR NOW
+            // case "WHILE":
+            //     executeWhile(tokens);
+            //     break;
+            // case "for":// for - SHIT FOR NOW
+            // case "For":
+            //     executeFor(tokens);
+            //     break;
             case "/":// comment
                 break;
             default:
