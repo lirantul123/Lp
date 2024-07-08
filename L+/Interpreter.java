@@ -9,6 +9,7 @@ import java.util.Scanner;
 // TODO:  hello % x %(only if 'x' was declared) or hello % 55 %(only number)
 // TODO: ++(+1), modify the enum
 public class Interpreter {
+
     public static final int incredecreValue = 1;
     public enum FAMWORDS {
         var,
@@ -24,7 +25,6 @@ public class Interpreter {
         clearWord,
         exitWord
     }    
-    
     private static HashMap<String, Integer> variables;
     // [fun_name], [variables, content]
     private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
@@ -466,7 +466,12 @@ public class Interpreter {
     }
 
     public static void main(String[] args) throws Exception {
-        Interpreter interpreter = new Interpreter();
-        interpreter.execute();
+        try {
+            Interpreter interpreter = new Interpreter();
+            interpreter.execute();
+
+        } catch (Exception e) {
+            System.out.println("Error in initializing the interpreter: " + e.getMessage());
+        }
     }
 }

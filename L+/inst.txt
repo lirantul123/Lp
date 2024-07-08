@@ -18,11 +18,14 @@ Simple math expressions:
 Conditional statements (if):
     It supports if statements to execute code blocks based on conditions like greater than ('>'), less than ('<'), or equal to ('=') comparisons between variables or numbers.
 
-Functions (limited definition): 
-    You can define functions (fun) with arguments, but currently, it doesn't support function calls or implementing function logic within the definition.
+Functions: 
+    You can define functions (fun) with arguments, &it supports function calls.
+
+Loops:
+    While loops and For loops are in progress.
 
 Clear screen & exit:
-    It offers a basic "clear screen" functionality by printing multiple newlines, although it doesn't truly clear the terminal buffer.
+    It offers a basic "clear screen" functionality, although it doesn't truly clear the terminal buffer(I think) & and exit the interpreter.
 
 Comment argument:
     You can decide to write sentance as a comment, and it will not be executed('/').
@@ -34,17 +37,6 @@ Data types beyond integers:
 
 Complex data structures:    
     It doesn't handle data structures like arrays, strings, or objects.
-Function calls:
-    While you can define functions, you cannot call them within your code.
 
-Function logic within definition:
-    The current fun definition only stores argument names, not the actual function body or logic.
-
-Error handling (except for division by zero):
+Error handling ~ (except for division by zero):
     It doesn't handle many potential errors like accessing non-existent variables, using invalid operators, or attempting operations on incompatible data types (e.g., dividing a string by a number).
-
-Overall:
-    This project provides a foundation for building a more comprehensive interpreter. 
-    It demonstrates concepts like variable handling, basic math operations, conditional statements,
-    and function definition (partially). With further development,
-    it could become a more powerful tool for executing more complex code.
