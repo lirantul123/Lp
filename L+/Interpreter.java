@@ -1,3 +1,4 @@
+//import java.util.*; all bellow ↓
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 // TODO:  hello % x %(only if 'x' was declared) or hello % 55 %(only number)
-// TODO: ++(+1), modify the enum
+// TODO: modify the enum
 public class Interpreter {
 
     public static final int incredecreValue = 1;
