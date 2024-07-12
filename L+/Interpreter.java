@@ -96,7 +96,7 @@ public class Interpreter {
                 if (!innerFun)
                     executeFunction(tokens);
                 else
-                    throw new Exception("Syntax Error: Function definition cannot be inside one.");
+                System.out.println("\n'Syntax Error: Function definition cannot be inside one.'\n");
             // case "while":// while - SHIT FOR NOW
             // case "WHILE":
             //     executeWhile(tokens);
@@ -156,14 +156,14 @@ public class Interpreter {
     // var a = 1; while % a < 2 % $ print a; a ++; print a; $
     private static void executeWhile(String[] tokens) throws Exception {
         if (tokens.length < 5 || !tokens[2].equals("%") || !tokens[tokens.length - 1].equals("$")) {
-            throw new Exception("Syntax Error: Expected '%' and '$' for while loop.");
+            System.out.println("\n| 'Syntax Error: Expected '%' and '$' for while loop.' |\n");
         }
     
         String condition = tokens[3];
         String[] conditionParts = condition.split("\\s+");
         
         if (conditionParts.length != 3) {
-            throw new Exception("Syntax Error: Invalid condition in while loop.");
+            System.out.println("\n| 'Syntax Error: Invalid condition in while loop.' |\n");
         }
     
         StringBuilder bodyBuilder = new StringBuilder();
@@ -214,7 +214,7 @@ public class Interpreter {
 
     private static void executeFor(String[] tokens) throws Exception {
         if (tokens.length < 7 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("$")) {
-            throw new Exception("Syntax Error: Expected '%' and '$' for for loop.");
+            System.out.println("\n| 'Syntax Error: Expected '%' and '$' for for loop.' |\n");
         }
 
         String varName = tokens[2];
@@ -244,30 +244,45 @@ public class Interpreter {
     }
 
     private static void executeUserFunction(String functionName, String[] tokens) throws Exception {
+        boolean cannot_run_function = false;
+
         if (tokens.length < 3 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("%")) {
-            throw new Exception("Syntax Error: Expected '%' to surround the function variables.");
+            System.out.println("\n| 'Syntax Error: Expected '%' to surround the function variables.' |\n");
         }
 
         String[] variableTokens = String.join(" ", Arrays.copyOfRange(tokens, 2, tokens.length - 1)).split("\\s*,\\s*");
         List<String> providedVariables = Arrays.asList(variableTokens);
 
+        for (int i = 0; i < providedVariables.size(); i++) {// only if the variables were setted to value
+            String var = providedVariables.get(i);
+            if (!variables.containsKey(var)){
+                System.out.println("\n| Variable - '" + var + "' was not setted. Therfore, cannot execute - '" + functionName + "' method |\n");
+                cannot_run_function = true;
+            }
+        }
+        
         Map.Entry<List<String>, List<String>> function = functions.get(functionName);
         List<String> functionVariables = function.getKey();
         List<String> functionContent = function.getValue();
 
         if (providedVariables.size() != functionVariables.size()) {
-            throw new Exception("Mismatching Argument: The number of provided variables does not match the function's variables.");
+            System.out.println("\n| 'Mismatching Argument: The number of provided variables does not match the function's variables.' |\n");
         }
 
-        System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
-        for (String content : functionContent) {
-            executeLine(content, true);
+        if (cannot_run_function){
+            System.out.println("\n| Cannot execute - '" + functionName + "' method ↑ |\n");
+        }
+        else {
+            System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
+            for (String content : functionContent) {
+                executeLine(content, true);
+            }
         }
     }
 
     private static void executeFunction(String[] tokens) throws Exception {
         if (tokens.length < 3) {
-            throw new Exception("Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.");
+            System.out.println("\n| 'Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.' |\n");
         }
 
         String functionName = tokens[1];
@@ -275,7 +290,7 @@ public class Interpreter {
         List<String> functionContent = new ArrayList<>();
 
         if (!tokens[2].equals("%")) {
-            throw new Exception("Syntax Error: Expected '%' at position 2 in the token array.");
+            System.out.println("\n| 'Syntax Error: Expected '%' at position 2 in the token array.' |\n");
         }
 
         int i = 3;
@@ -283,18 +298,18 @@ public class Interpreter {
             String token = tokens[i];
 
             if (!findIfNumberOnly(token)) {
-                throw new Exception("Mismatching Argument: variables cannot be only numbers");
+                System.out.println("\n| 'Mismatching Argument: variables cannot be only numbers' |\n");
             }
             if (!token.equals(","))
                 functionVariables.add(token);
             i++;
         }
         if (i >= tokens.length || !tokens[i].equals("%")) {
-            throw new Exception("Syntax Error: Expected '%' at position " + i + " in the token array.");
+            System.out.println("\n| 'Syntax Error: Expected '%' at position " + i + " in the token array.' |\n");
         }
         i++;
         if (i >= tokens.length || !tokens[i].equals("$")) {
-            throw new Exception("Syntax Error: Expected '$' after token[" + i + "] in the token array.");
+            System.out.println("\n| 'Syntax Error: Expected '$' after token[" + i + "] in the token array.' |\n");
         }
         i++;
         StringBuilder contentBuilder = new StringBuilder();
@@ -303,7 +318,7 @@ public class Interpreter {
             i++;
         }
         if (i >= tokens.length || !tokens[i].equals("$")) {
-            throw new Exception("Syntax Error: Expected closing '$' in the token array.");
+            System.out.println("\n\n| 'Syntax Error: Expected closing '$' in the token array.' |\n");
         }
         String[] commands = contentBuilder.toString().split(";");
         for (String command : commands) {
