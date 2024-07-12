@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-// TODO:  hello % x %(only if 'x' was declared) or hello % 55 %(only number)
 // TODO: modify the enum
 public class Interpreter {
 
@@ -35,7 +34,7 @@ public class Interpreter {
         Interpreter.functions = new HashMap<>();
     }
 
-    public void execute() throws Exception {
+    public void execute() {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.print("Enter your code below. Type 'clear' to clear the screen, 'exit' on a new line to exit:\n>> ");
             String line; boolean cls = false;
@@ -49,7 +48,7 @@ public class Interpreter {
                 if (line.trim().equals("exit")) {
                     break;
                 }
-                if (line.trim().equals("clear") || line.trim().equals("cls")) {
+                if (line.trim().toLowerCase().equals("clear") || line.trim().toLowerCase().equals("cls")) {
                     cleanScreen();
                     cls = true;
                 }
@@ -66,14 +65,14 @@ public class Interpreter {
         System.out.print("\033[H\033[2J");  
         System.out.flush();  
     }
-    private void runCode(String code) throws Exception {
+    private void runCode(String code) {
         String[] lines = code.split("\n");
         for (String line : lines) {
             executeLine(line.trim(), false);
         }
     }
 
-    private static void executeLine(String line, boolean innerFun)  throws Exception {
+    private static void executeLine(String line, boolean innerFun)  {
         if (line.isEmpty()) {
             return;// empty lines is okay 𓆝 𓆟 𓆞 𓆝 𓆟 
         }
@@ -96,7 +95,7 @@ public class Interpreter {
                 if (!innerFun)
                     executeFunction(tokens);
                 else
-                System.out.println("\n'Syntax Error: Function definition cannot be inside one.'\n");
+                System.out.println("\n| 'Syntax Error: Function definition cannot be inside one.' |\n");
             // case "while":// while - SHIT FOR NOW
             // case "WHILE":
             //     executeWhile(tokens);
@@ -154,7 +153,7 @@ public class Interpreter {
 
 
     // var a = 1; while % a < 2 % $ print a; a ++; print a; $
-    private static void executeWhile(String[] tokens) throws Exception {
+    private static void executeWhile(String[] tokens)  {
         if (tokens.length < 5 || !tokens[2].equals("%") || !tokens[tokens.length - 1].equals("$")) {
             System.out.println("\n| 'Syntax Error: Expected '%' and '$' for while loop.' |\n");
         }
@@ -198,7 +197,8 @@ public class Interpreter {
             case ">=":
                 return leftValue >= rightValue;
             default:
-                throw new IllegalArgumentException("Invalid operator in condition: " + operator);
+                System.out.println("\n| 'Invalid operator in condition: " + operator + "' |\n");
+                return false;
         }
     }
     private static int getValue(String operand) {
@@ -208,11 +208,12 @@ public class Interpreter {
         try {
             return Integer.parseInt(operand);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid operand: " + operand);
+            System.out.println("\n| 'Invalid operand: " + operand + "' |\n");
         }
+        return -1;
     }
 
-    private static void executeFor(String[] tokens) throws Exception {
+    private static void executeFor(String[] tokens) {
         if (tokens.length < 7 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("$")) {
             System.out.println("\n| 'Syntax Error: Expected '%' and '$' for for loop.' |\n");
         }
@@ -234,7 +235,7 @@ public class Interpreter {
         }
     }
 
-    private static void executeExistFunction(String[] tokens) throws Exception {
+    private static void executeExistFunction(String[] tokens) {
         String functionName = tokens[0];
         if (functions.containsKey(functionName)) {
             executeUserFunction(functionName, tokens);
@@ -243,7 +244,7 @@ public class Interpreter {
         }
     }
 
-    private static void executeUserFunction(String functionName, String[] tokens) throws Exception {
+    private static void executeUserFunction(String functionName, String[] tokens) {
         boolean cannot_run_function = false;
 
         if (tokens.length < 3 || !tokens[1].equals("%") || !tokens[tokens.length - 1].equals("%")) {
@@ -269,18 +270,28 @@ public class Interpreter {
             System.out.println("\n| 'Mismatching Argument: The number of provided variables does not match the function's variables.' |\n");
         }
 
-        if (cannot_run_function){
-            System.out.println("\n| Cannot execute - '" + functionName + "' method ↑ |\n");
-        }
-        else {
-            System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
-            for (String content : functionContent) {
-                executeLine(content, true);
-            }
-        }
+        // if (cannot_run_function){
+        //     System.out.println("\n| Cannot execute - '" + functionName + "' method ↑ |\n");
+        // }
+        // else {
+        //     System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
+        //     for (String content : functionContent) {
+        //         executeLine(content, true);
+        //     }
+        // } ↓ same ↓
+        System.out.println(cannot_run_function ? "\n| Cannot execute - '" + functionName +
+                                                 "' method ↑ |\n" : executeFunContent(functionName, providedVariables, functionContent));
     }
 
-    private static void executeFunction(String[] tokens) throws Exception {
+    private static String executeFunContent(String functionName, List<String> providedVariables, List<String> functionContent) {
+        String mess = "Executing function " + functionName + " with variables: " + providedVariables;
+        for (String content : functionContent) {
+            executeLine(content, true);
+        }
+        return mess;
+    }
+
+    private static void executeFunction(String[] tokens) {
         if (tokens.length < 3) {
             System.out.println("\n| 'Syntax Error: Expected '%' at position 2 in the token array, but the array is too short.' |\n");
         }
@@ -469,7 +480,7 @@ public class Interpreter {
                         if (operand != 0) {
                             result /= operand;
                         } else {
-                            throw new Error("Exception: Division by zero!");
+                            System.out.println("\n| 'Exception: Division by zero!' |");
                         }
                         break;
                     default:
@@ -481,7 +492,7 @@ public class Interpreter {
         return result;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             Interpreter interpreter = new Interpreter();
             interpreter.execute();
