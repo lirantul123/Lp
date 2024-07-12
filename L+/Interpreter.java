@@ -23,7 +23,8 @@ public class Interpreter {
         funWord,
         printWord,
         clearWord,
-        exitWord
+        exitWord,
+        length
     }    
     private static HashMap<String, Integer> variables;
     // [fun_name], [variables, content]
