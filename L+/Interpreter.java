@@ -26,12 +26,15 @@ public class Interpreter {
         exitWord,
         length
     }    
-    private static HashMap<String, Integer> variables;
+    private static HashMap<String, Integer> intVariables;
+    private static HashMap<String, String> stringVariables;
+
     // [fun_name], [variables, content]
     private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
 
     public Interpreter() {
-        Interpreter.variables = new HashMap<>();
+        Interpreter.intVariables = new HashMap<>();
+        Interpreter.stringVariables = new HashMap<>();
         Interpreter.functions = new HashMap<>();
     }
 
@@ -128,9 +131,9 @@ public class Interpreter {
         }
         String varName = tokens[0];
 
-        if (variables.containsKey(varName)) {
-            int currentValue = variables.get(varName);
-            variables.put(varName, currentValue + incredecreValue);
+        if (intVariables.containsKey(varName)) {
+            int currentValue = intVariables.get(varName);
+            intVariables.put(varName, currentValue + incredecreValue);
         } else {
             System.out.println("Variable not found: " + varName);
         }
@@ -144,9 +147,9 @@ public class Interpreter {
         }
         String varName = tokens[0];
 
-        if (variables.containsKey(varName)) {
-            int currentValue = variables.get(varName);
-            variables.put(varName, currentValue - incredecreValue);
+        if (intVariables.containsKey(varName)) {
+            int currentValue = intVariables.get(varName);
+            intVariables.put(varName, currentValue - incredecreValue);
         } else {
             System.out.println("Variable not found: " + varName);
         }
@@ -203,8 +206,8 @@ public class Interpreter {
         }
     }
     private static int getValue(String operand) {
-        if (variables.containsKey(operand)) {
-            return variables.get(operand);
+        if (intVariables.containsKey(operand)) {// here String also shoud be a prospect
+            return intVariables.get(operand);
         }
         try {
             return Integer.parseInt(operand);
@@ -229,7 +232,7 @@ public class Interpreter {
         String[] bodyLines = bodyBuilder.toString().split(";");
 
         for (int i = start; i < end; i++) {
-            variables.put(varName, i);
+            intVariables.put(varName, i);// here also!
             for (String line : bodyLines) {
                 executeLine(line.trim(), false);
             }
@@ -257,7 +260,7 @@ public class Interpreter {
 
         for (int i = 0; i < providedVariables.size(); i++) {// only if the variables were setted to value
             String var = providedVariables.get(i);
-            if (!variables.containsKey(var)){
+            if (!intVariables.containsKey(var)){// here also!
                 System.out.println("\n| Variable - '" + var + "' was not setted. Therfore, cannot execute - '" + functionName + "' method |\n");
                 cannot_run_function = true;
             }
@@ -353,19 +356,18 @@ public class Interpreter {
                 for (int i = 4; i < tokens.length; i++) {
                     if (tokens[tokens.length - 1].equals("'"))
                         break;
-                    varStringValue += tokens[i];
+                    varStringValue += tokens[i] + " ";
                 }
+                stringVariables.put(varName, varStringValue);
             }
-        }else{
+        }else{// int/double
             try {
                 int varValue = Integer.parseInt(tokens[3]);
-                variables.put(varName, varValue);
+                intVariables.put(varName, varValue);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid variable value: " + tokens[3]);
             }
         }
-
-        
     }
 
     private static void executePrint(String[] tokens) {
@@ -376,8 +378,8 @@ public class Interpreter {
         }
         String varName = tokens[1];
 
-        if (variables.containsKey(varName)) {
-            int varValue = variables.get(varName);
+        if (intVariables.containsKey(varName)) {// here also!!
+            int varValue = intVariables.get(varName);
             if (tokens.length > 2 && isMathExpression(tokens)) {
                 double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
                 System.out.println(result);
@@ -465,8 +467,8 @@ public class Interpreter {
                 operator = token;
             } else {
                 double operand;
-                if (variables.containsKey(token)) {
-                    operand = variables.get(token);
+                if (intVariables.containsKey(token)) {
+                    operand = intVariables.get(token);
                 } else {
                     try {
                         operand = Double.parseDouble(token);
