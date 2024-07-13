@@ -271,15 +271,6 @@ public class Interpreter {
             System.out.println("\n| 'Mismatching Argument: The number of provided variables does not match the function's variables.' |\n");
         }
 
-        // if (cannot_run_function){
-        //     System.out.println("\n| Cannot execute - '" + functionName + "' method ↑ |\n");
-        // }
-        // else {
-        //     System.out.println("Executing function " + functionName + " with variables: " + providedVariables);
-        //     for (String content : functionContent) {
-        //         executeLine(content, true);
-        //     }
-        // } ↓ same ↓
         System.out.println(cannot_run_function ? "\n| Cannot execute - '" + functionName +
                                                  "' method ↑ |\n" : executeFunContent(functionName, providedVariables, functionContent));
     }
@@ -352,12 +343,29 @@ public class Interpreter {
             return;
         }
         String varName = tokens[1];
-        try {
-            int varValue = Integer.parseInt(tokens[3]);
-            variables.put(varName, varValue);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid variable value: " + tokens[3]);
+
+        String varStringValue = "";
+        if (tokens[3].equals("'"))// string/char
+        {
+            if (!tokens[tokens.length - 1].equals("'"))
+                System.out.println("\n| 'Syntax Error: Expected ' in the end of the value. |\n");
+            else{
+                for (int i = 4; i < tokens.length; i++) {
+                    if (tokens[tokens.length - 1].equals("'"))
+                        break;
+                    varStringValue += tokens[i];
+                }
+            }
+        }else{
+            try {
+                int varValue = Integer.parseInt(tokens[3]);
+                variables.put(varName, varValue);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid variable value: " + tokens[3]);
+            }
         }
+
+        
     }
 
     private static void executePrint(String[] tokens) {
