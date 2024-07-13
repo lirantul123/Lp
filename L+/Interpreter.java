@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+// TODO: if variable was already declared... it follows that when a new value setted, there is no need to(must not) rewrite 'var' before the variable name
 // TODO: modify the enum
 public class Interpreter {
 
@@ -354,9 +355,9 @@ public class Interpreter {
                 System.out.println("\n| 'Syntax Error: Expected ' in the end of the value. |\n");
             else{
                 for (int i = 4; i < tokens.length; i++) {
-                    if (tokens[tokens.length - 1].equals("'"))
+                    if (tokens[i].equals("'"))
                         break;
-                    varStringValue += tokens[i] + " ";
+                    varStringValue += tokens[i] + " "; 
                 }
                 stringVariables.put(varName, varStringValue);
             }
@@ -378,7 +379,7 @@ public class Interpreter {
         }
         String varName = tokens[1];
 
-        if (intVariables.containsKey(varName)) {// here also!!
+        if (intVariables.containsKey(varName)) {
             int varValue = intVariables.get(varName);
             if (tokens.length > 2 && isMathExpression(tokens)) {
                 double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
@@ -386,8 +387,11 @@ public class Interpreter {
             } else {
                 System.out.println(varValue);
             }
-        } else {
-            if (!isNum(tokens[1]))// TODO: getting variables into the function and executing on them stuff
+        } else if(stringVariables.containsKey(varName)){
+            String varValue = stringVariables.get(varName);
+            System.out.println(varValue);
+        }else {
+            if (!isNum(tokens[1]))// Should be changes, because string is a prospect
                 System.out.println("smt- we support only numbers for now: " + varName);
             else{
                 if (tokens.length > 2 && isMathExpression(tokens)) {
