@@ -27,9 +27,9 @@ public class Interpreter {
         exitWord,
         length
     }    
+    
     private static HashMap<String, Integer> intVariables;
     private static HashMap<String, String> stringVariables;
-
     // [fun_name], [variables, content]
     private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
 
