@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-// TODO: if variable was already declared... it follows that when a new value setted, there is no need to(must not) rewrite 'var' before the variable name
-// TODO: modify the enum
+// TODO: Modify the enum. Process: 1/10
+// TODO: Modify and correct while loop and for loop
+// TODO: If variable is already declared... thus, there is no need to(must not) rewrite 'var' before the variable name. Otherwise, error ye
+
 public class Interpreter {
 
     public static final int incredecreValue = 1;
-    public enum FAMWORDS {
+    public enum FAMWORDS {// Familiar words with the system
         var,
         perSign,
         dollSign,
@@ -138,7 +140,6 @@ public class Interpreter {
         } else {
             System.out.println("Variable not found: " + varName);
         }
-
     }
 
     private static void decrementVar(String[] tokens) {
@@ -508,12 +509,15 @@ public class Interpreter {
     }
 
     public static void main(String[] args) {
+        // for (FAMWORDS f : FAMWORDS.values()) {
+        //     System.out.println(f.equals(FAMWORDS.length) ? f + " was detected." : f + " was *** not *** detected.");
+        // }
         try {
             Interpreter interpreter = new Interpreter();
             interpreter.execute();
 
         } catch (Exception e) {
             System.out.println("Error in initializing the interpreter: " + e.getMessage());
-        }
+        } 
     }
 }
