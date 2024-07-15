@@ -27,9 +27,8 @@ public class Interpreter {
         printWord,
         clearWord,
         exitWord,
-        length
+        len
     }    
-    
     private static HashMap<String, Integer> intVariables;
     private static HashMap<String, String> stringVariables;
     // [fun_name], [variables, content]
@@ -99,19 +98,26 @@ public class Interpreter {
                 break;
             case "fun":// function
             case "FUN":
-                if (!innerFun)
+                if (!innerFun){
                     executeFunction(tokens);
-                else
-                System.out.println("\n| 'Syntax Error: Function definition cannot be inside one.' |\n");
-            // case "while":// while - SHIT FOR NOW
-            // case "WHILE":
-            //     executeWhile(tokens);
-            //     break;
-            // case "for":// for - SHIT FOR NOW
-            // case "For":
-            //     executeFor(tokens);
-            //     break;
+                    break;
+                }
+                else{
+                    System.out.println("\n| 'Syntax Error: Function definition cannot be inside one.' |\n");
+                    break;
+                }
+            case "while":// while - SHIT FOR NOW
+            case "WHILE":
+                executeWhile(tokens);
+                break;
+            case "for":// for - SHIT FOR NOW
+            case "For":
+                executeFor(tokens);
+                break;
             case "/":// comment
+                break;
+            case "len":// length of String, List or Array
+                System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1]) + "_");
                 break;
             default:
                 // <fun_name> % <variables[,]> %
@@ -260,11 +266,23 @@ public class Interpreter {
         String[] variableTokens = String.join(" ", Arrays.copyOfRange(tokens, 2, tokens.length - 1)).split("\\s*,\\s*");
         List<String> providedVariables = Arrays.asList(variableTokens);
 
+        boolean skipBeNum = true;
         for (int i = 0; i < providedVariables.size(); i++) {// only if the variables were setted to value
+
             String var = providedVariables.get(i);
-            if (!intVariables.containsKey(var)){// here also!
-                System.out.println("\n| Variable - '" + var + "' was not setted. Therfore, cannot execute - '" + functionName + "' method |\n");
-                cannot_run_function = true;
+
+            for (int j = 0; j < var.length(); j++) {
+                if (!((int)(var.charAt(i)) >= 97 && (int)(var.charAt(i)) <= 122) || !((int)(var.charAt(i)) >= 65 && (int)(var.charAt(i)) <= 90))// only number...
+                    continue;
+                else{
+                    skipBeNum = false;
+                }
+            }
+            if (!skipBeNum){
+                if (!intVariables.containsKey(var)){
+                    System.out.println("\n| Variable - '" + var + "' was not setted. Therfore, cannot execute - '" + functionName + "' method |\n");
+                    cannot_run_function = true;
+                }
             }
         }
         
@@ -508,9 +526,46 @@ public class Interpreter {
         return result;
     }
 
+    // len x
+    private static <T> int len(String varName) {
+        if (!intVariables.containsKey(varName) && !stringVariables.containsKey(varName)) {
+            throw new IllegalArgumentException("Variable not found: " + varName);
+        }
+    
+        T varValue;
+        if (intVariables.containsKey(varName)) {
+            varValue = (T) intVariables.get(varName);
+        } else {
+            varValue = (T) stringVariables.get(varName);
+        }
+    
+        if (varValue instanceof String) {
+            String[] words = ((String) varValue).trim().split("\\s+");
+            return words.length;
+    
+        } else if (varValue instanceof List) { // Unsupported Yet
+            return ((List<?>) varValue).size();
+    
+        } else if (varValue.getClass().isArray()) { // Unsupported Yet
+            return java.lang.reflect.Array.getLength(varValue);
+    
+        } else if (varValue instanceof Integer || varValue instanceof Double) {
+            System.out.println("This is a Num.\nIf you want the length, convert it to String, List or Array.");
+            return 1;
+    
+        } else if (varValue instanceof Boolean) {
+            System.out.println("This is a boolean.\nIf you want the length, convert it to String, List or Array.");
+            return 1;
+    
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + varValue.getClass());
+        }
+    }
+    
+
     public static void main(String[] args) {
         // for (FAMWORDS f : FAMWORDS.values()) {
-        //     System.out.println(f.equals(FAMWORDS.length) ? f + " was detected." : f + " was *** not *** detected.");
+        //     System.out.println(f.equals(FAMWORDS.len) ? f + " was detected." : f + " was *** not *** detected.");
         // }
         try {
             Interpreter interpreter = new Interpreter();
