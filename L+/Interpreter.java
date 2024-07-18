@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 // TODO: Modify the enum. Process: 1/10
-// TODO: Modify and correct while loop and for loop
+// TODO: Correct while loop and for loop
 // TODO: If variable is already declared... thus, there is no need to(must not) rewrite 'var' before the variable name. Otherwise, error ye
 
 public class Interpreter {
@@ -551,17 +551,16 @@ public class Interpreter {
     
         } else if (varValue instanceof Integer || varValue instanceof Double) {
             System.out.println("This is a Num.\nIf you want the length, convert it to String, List or Array.");
-            return 1;
+            return -1;
     
         } else if (varValue instanceof Boolean) {
-            System.out.println("This is a boolean.\nIf you want the length, convert it to String, List or Array.");
-            return 1;
+            System.out.println("This is a Boolean.\nIf you want the length, convert it to String, List or Array.");
+            return -1;
     
         } else {
             throw new IllegalArgumentException("Unsupported type: " + varValue.getClass());
         }
     }
-    
 
     public static void main(String[] args) {
         // for (FAMWORDS f : FAMWORDS.values()) {
