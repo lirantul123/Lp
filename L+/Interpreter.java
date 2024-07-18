@@ -163,7 +163,6 @@ public class Interpreter {
         }
     }
 
-
     // var a = 1; while % a < 2 % $ print a; a ++; print a; $
     private static void executeWhile(String[] tokens)  {
         if (tokens.length < 5 || !tokens[2].equals("%") || !tokens[tokens.length - 1].equals("$")) {
