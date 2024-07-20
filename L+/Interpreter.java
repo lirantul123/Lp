@@ -525,7 +525,7 @@ public class Interpreter {
         return result;
     }
 
-    // len x
+    // len x - should be moved to readyFuncs Class
     private static <T> int len(String varName) {
         if (!intVariables.containsKey(varName) && !stringVariables.containsKey(varName)) {
             throw new IllegalArgumentException("Variable not found: " + varName);
