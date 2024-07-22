@@ -1,4 +1,4 @@
-package Lp;
+
 //import java.util.*; all bellow ↓
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -85,20 +85,16 @@ public class Interpreter {
         }
         String[] tokens = line.split("\\s+");
         switch (tokens[0]) {
-            case "var":// variable
-            case "VAR":
+            case "var": case "VAR":// variable
                 executeVarDeclaration(tokens);
                 break;
-            case "print":// print
-            case "PRINT":
+            case "print": case "PRINT":// print
                 executePrint(tokens);
                 break;
-            case "if":// if
-            case "IF":
+            case "if": case "IF":// if
                 executeIf(Arrays.copyOfRange(tokens, 1, tokens.length));
                 break;
-            case "fun":// function
-            case "FUN":
+            case "fun": case "FUN":// function
                 if (!innerFun){
                     executeFunction(tokens);
                     break;
@@ -107,20 +103,21 @@ public class Interpreter {
                     System.out.println("\n| 'Syntax Error: Function definition cannot be inside one.' |\n");
                     break;
                 }
-            case "while":// while - SHIT FOR NOW
-            case "WHILE":
+            case "while": case "WHILE":// while - SHIT FOR NOW
                 executeWhile(tokens);
                 break;
-            case "for":// for - SHIT FOR NOW
-            case "For":
+            case "for": case "For":// for - SHIT FOR NOW
                 executeFor(tokens);
                 break;
             case "/":// comment
                 break;
-            case "len":// length of String, List or Array
+            case "lenW": case "LENW": case "lenw":// length of Words in String, List or Array
                 //ReadyFuncs r = new ReadyFuncs(intVariables, stringVariables);
                 //System.out.println("Variable '" + tokens[1] + "' length's is _" + r.len(tokens[1]) + "_");
-                System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1]) + "_");
+                System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1], 'w') + "_");
+                break;
+            case "lenL": case "LENL": case "lenl":// length of Letters in String, List or Array
+                System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1], 'l') + "_");
                 break;
             default:
                 // <fun_name> % <variables[,]> %
@@ -528,10 +525,11 @@ public class Interpreter {
         return result;
     }
 
-    public static int len(String varName) {
+    public static int len(String varName, char c) {
         if (!intVariables.containsKey(varName) && !stringVariables.containsKey(varName)) {
             throw new IllegalArgumentException("Variable not found: " + varName);
         }
+
         Object varValue;
         if (intVariables.containsKey(varName)) {
             varValue = intVariables.get(varName);
@@ -541,12 +539,15 @@ public class Interpreter {
     
         if (varValue instanceof String) {
             String[] words = ((String) varValue).trim().split("\\s+");
-            return words.length;
-        } else if (varValue instanceof List) {
-            return ((List<?>) varValue).size();
-        } else if (varValue.getClass().isArray()) {
-            return java.lang.reflect.Array.getLength(varValue);
-        } else if (varValue instanceof Integer || varValue instanceof Double) {
+            String[] letters = ((String) varValue).trim().split("");
+            return (c == 'w') ? words.length : letters.length;
+        } 
+        // else if (varValue instanceof List) {
+        //     return ((List<?>) varValue).size();
+        // } else if (varValue.getClass().isArray()) {
+        //     return java.lang.reflect.Array.getLength(varValue);
+        // } 
+        else if (varValue instanceof Integer || varValue instanceof Double) {
             System.out.println("This is a Num.\nIf you want the length, convert it to String, List or Array.");
             return -1;
         } else if (varValue instanceof Boolean) {
