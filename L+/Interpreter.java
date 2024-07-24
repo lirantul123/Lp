@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 // TODO: Modify the enum. Process: 1/10
 // TODO: Correct while loop and for loop
-// TODO: If variable is already declared... thus, there is no need to(must not) rewrite 'var' before the variable name. Otherwise, error ye
+// TODO: if function...
 
 public class Interpreter {
 
