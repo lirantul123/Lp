@@ -84,7 +84,7 @@ public class Interpreter {
         }
         String[] tokens = line.split("\\s+");
         switch (tokens[0]) {
-            case "var": case "VAR":// variable
+            case "var": case "VAR":// variable// a = something else, shittt without var now redefine
                 executeVarDeclaration(tokens);
                 break;
             case "print": case "PRINT":// print
