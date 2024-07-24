@@ -363,7 +363,12 @@ public class Interpreter {
             System.out.println("Invalid variable declaration: " + String.join(" ", tokens));
             return;
         }
+ 
         String varName = tokens[1];
+        if (intVariables.containsKey(varName) || stringVariables.containsKey(varName)) {
+            System.out.println("Variable already exist! Sorry but you cannot redeclare.");
+            return;
+        }
 
         String varStringValue = "";
         if (tokens[3].equals("'"))// string/char
@@ -454,6 +459,34 @@ public class Interpreter {
             System.out.println("Invalid operands for operation: " + String.join(" ", tokens));
             return;
         }
+
+        // Accaptable: if x + 3 - 1 > 5 * a // $ $
+        // String varName = tokens[1];
+        // double num;
+        // if (intVariables.containsKey(varName)) {
+        //     int varValue = intVariables.get(varName);
+        //     if (tokens.length > 2 && isMathExpression(tokens)) {
+        //         double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
+        //         System.out.println(result);
+        //     } else {
+        //         System.out.println(varValue);
+        //     }
+        // } else if(stringVariables.containsKey(varName)){
+        //     String varValue = stringVariables.get(varName);
+        //     System.out.println(varValue);
+        // }else {
+        //     if (!isNum(tokens[1]))// Should be changes, because string is a prospect
+        //         System.out.println("smt- we support only numbers for now: " + varName);
+        //     else{
+        //         if (tokens.length > 2 && isMathExpression(tokens)) {
+        //             num = strToDouble(tokens[1]);
+        //             double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), num);
+        //             System.out.println(result);
+        //         }
+        //         else
+        //             System.out.println(tokens[1]);
+        //     }
+        // }
 
         switch (operator) {
             case "<":
