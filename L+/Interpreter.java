@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-// TODO: Modify the enum. Process: 3/10
+// TODO: Modify the enum. Process: 9/10
 // TODO: Correct while loop and for loop
 // TODO: if function...
 
