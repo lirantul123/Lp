@@ -1,4 +1,3 @@
-//import java.util.*; all bellow ↓
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,28 +6,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-// TODO: Modify the enum. Process: 1/10
+// TODO: Modify the enum. Process: 3/10
 // TODO: Correct while loop and for loop
 // TODO: if function...
 
 public class Interpreter {
 
-    public static final int incredecreValue = 1;
-    public enum FAMWORDS {// Familiar words with the system
-        var,
-        perSign,
-        dollSign,
-        pp,// ++
-        mm,// --
-        ifWord,
-        whileWord,
-        forWord,
-        funWord,
-        printWord,
-        clearWord,
-        exitWord,
-        len
-    }    
+    public static final int IncreDecreValue = 1;
+    // Familiar words within the system
+    public enum FAMWORDS {
+        VAR("var"), PRINT("print"), IF("if"), WHILE("while"), FOR("for"), 
+        FUN("fun"), LEN("len"), CLEAR("clear"), EXIT("exit"),
+        COMMENT("/"), LENGTHW("lenw"), LENGTHL("lenl"),
+        PP("++"), MM("--");
+
+        private final String keyword;
+
+        FAMWORDS(String keyword) {
+            this.keyword = keyword;
+        }
+
+        public String getKeyword() {
+            return keyword;
+        }
+
+        public static FAMWORDS fromString(String keyword) {
+            for (FAMWORDS word : FAMWORDS.values()) {// searching for the value (var√ print√... etc)
+                if (word.keyword.equalsIgnoreCase(keyword)) {
+                    return word;
+                }
+            }
+            return null;
+        }
+    }
+       
     private static HashMap<String, Integer> intVariables;
     private static HashMap<String, String> stringVariables;
     // [fun_name], [variables, content]
@@ -51,10 +62,10 @@ public class Interpreter {
                 }
 
                 line = scanner.nextLine();
-                if (line.trim().equals("exit")) {
+                if (line.trim().equalsIgnoreCase(FAMWORDS.EXIT.getKeyword())) {
                     break;
                 }
-                if (line.trim().toLowerCase().equals("clear") || line.trim().toLowerCase().equals("cls")) {
+                if (line.trim().equalsIgnoreCase(FAMWORDS.CLEAR.getKeyword())) {
                     cleanScreen();
                     cls = true;
                 }
@@ -80,20 +91,28 @@ public class Interpreter {
 
     private static void executeLine(String line, boolean innerFun)  {
         if (line.isEmpty()) {
-            return;// empty lines is okay 𓆝 𓆟 𓆞 𓆝 𓆟 
+            return;// Empty lines are accaptable and ignored 𓆝 𓆟 𓆞 𓆝 𓆟 
         }
+
         String[] tokens = line.split("\\s+");
-        switch (tokens[0]) {
-            case "var": case "VAR":// variable// a = something else, shittt without var now redefine
+        FAMWORDS keyword = FAMWORDS.fromString(tokens[0]);
+
+        if (keyword == null) {
+            System.out.println("Invalid statement or function not found: " + tokens[0]);
+            return;
+        }
+
+        switch (keyword) {
+            case VAR:// variable// a = something else, shittt without var now redefine
                 executeVarDeclaration(tokens);
                 break;
-            case "print": case "PRINT":// print
+            case PRINT:// print
                 executePrint(tokens);
                 break;
-            case "if": case "IF":// if
+            case IF:// if
                 executeIf(Arrays.copyOfRange(tokens, 1, tokens.length));
                 break;
-            case "fun": case "FUN":// function
+            case FUN:// function
                 if (!innerFun){
                     executeFunction(tokens);
                     break;
@@ -102,28 +121,28 @@ public class Interpreter {
                     System.out.println("\n| 'Syntax Error: Function definition cannot be inside one.' |\n");
                     break;
                 }
-            case "while": case "WHILE":// while - SHIT FOR NOW
+            case WHILE:// while - SHIT FOR NOW
                 executeWhile(tokens);
                 break;
-            case "for": case "For":// for - SHIT FOR NOW
+            case FOR:// for - SHIT FOR NOW
                 executeFor(tokens);
                 break;
-            case "/":// comment
+            case COMMENT:// comment
                 break;
-            case "lenW": case "LENW": case "lenw":// length of Words in String, List or Array
+            case LENGTHW:// length of Words in String, List or Array
                 //ReadyFuncs r = new ReadyFuncs(intVariables, stringVariables);
                 //System.out.println("Variable '" + tokens[1] + "' length's is _" + r.len(tokens[1]) + "_");
                 System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1], 'w') + "_");
                 break;
-            case "lenL": case "LENL": case "lenl":// length of Letters in String, List or Array
+            case LENGTHL:// length of Letters in String, List or Array
                 System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1], 'l') + "_");
                 break;
             default:
                 // <fun_name> % <variables[,]> %
-                if (!tokens[1].equals("++") && !tokens[1].equals("--"))
+                if (!tokens[1].trim().equalsIgnoreCase(FAMWORDS.PP.getKeyword()) && !tokens[1].trim().equalsIgnoreCase(FAMWORDS.MM.getKeyword()))
                     executeExistFunction(tokens);
                 else{
-                    if (tokens[1].equals("++")){
+                    if (tokens[1].trim().equalsIgnoreCase(FAMWORDS.MM.getKeyword())){
                         incrementVar(tokens);// increment by 1
                     }
                     else
@@ -141,7 +160,7 @@ public class Interpreter {
 
         if (intVariables.containsKey(varName)) {
             int currentValue = intVariables.get(varName);
-            intVariables.put(varName, currentValue + incredecreValue);
+            intVariables.put(varName, currentValue + IncreDecreValue);
         } else {
             System.out.println("Variable not found: " + varName);
         }
@@ -156,7 +175,7 @@ public class Interpreter {
 
         if (intVariables.containsKey(varName)) {
             int currentValue = intVariables.get(varName);
-            intVariables.put(varName, currentValue - incredecreValue);
+            intVariables.put(varName, currentValue - IncreDecreValue);
         } else {
             System.out.println("Variable not found: " + varName);
         }
