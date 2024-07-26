@@ -9,15 +9,16 @@ import java.util.Scanner;
 // TODO: Modify the enum. Process: 9/10
 // TODO: Correct while loop and for loop
 // TODO: if function...
+// TODO: len ' e ' and not only to variables
 
 public class Interpreter {
 
     public static final int IncreDecreValue = 1;
     // Familiar words within the system
     public enum FAMWORDS {
-        VAR("var"), PRINT("print"), IF("if"), WHILE("while"), FOR("for"), 
-        FUN("fun"), LEN("len"), CLEAR("clear"), EXIT("exit"),
-        COMMENT("/"), LENGTHW("lenw"), LENGTHL("lenl"),
+        VAR("var"), PRINT("print"), IF("if"), WHILE("while"),
+        FOR("for"), FUN("fun"), CLEAR("clear"), EXIT("exit"),
+        COMMENT("/"), LEN("len"),
         PP("++"), MM("--");
 
         private final String keyword;
@@ -25,11 +26,9 @@ public class Interpreter {
         FAMWORDS(String keyword) {
             this.keyword = keyword;
         }
-
         public String getKeyword() {
             return keyword;
         }
-
         public static FAMWORDS fromString(String keyword) {
             for (FAMWORDS word : FAMWORDS.values()) {// searching for the value (var√ print√... etc)
                 if (word.keyword.equalsIgnoreCase(keyword)) {
@@ -129,13 +128,11 @@ public class Interpreter {
                 break;
             case COMMENT:// comment
                 break;
-            case LENGTHW:// length of Words in String, List or Array
+            case LEN:// length of Words/Letters in String, List or Array
                 //ReadyFuncs r = new ReadyFuncs(intVariables, stringVariables);
                 //System.out.println("Variable '" + tokens[1] + "' length's is _" + r.len(tokens[1]) + "_");
-                System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1], 'w') + "_");
-                break;
-            case LENGTHL:// length of Letters in String, List or Array
-                System.out.println("Variable '" + tokens[1] + "' length's is _" + len(tokens[1], 'l') + "_");
+                System.out.println("Variable '" + tokens[1] + "' length's in Letters is _" + len(tokens[1], 'l') + "_");
+                System.out.println("Variable '" + tokens[1] + "' length's in Words is _" + len(tokens[1], 'w') + "_");
                 break;
             default:
                 // <fun_name> % <variables[,]> %
@@ -578,7 +575,8 @@ public class Interpreter {
 
     public static int len(String varName, char c) {
         if (!intVariables.containsKey(varName) && !stringVariables.containsKey(varName)) {
-            throw new IllegalArgumentException("Variable not found: " + varName);
+            System.out.println("Variable not found: " + varName);
+            return 0;// TODO: fix len to handle unidentified variables in len, and not an emoty strings!
         }
 
         Object varValue;
@@ -610,9 +608,6 @@ public class Interpreter {
     }
     
     public static void main(String[] args) {
-        // for (FAMWORDS f : FAMWORDS.values()) {
-        //     System.out.println(f.equals(FAMWORDS.len) ? f + " was detected." : f + " was *** not *** detected.");
-        // }
         try {
             Interpreter interpreter = new Interpreter();
             interpreter.execute();
