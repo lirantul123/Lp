@@ -61,10 +61,10 @@ public class Interpreter {
                 }
 
                 line = scanner.nextLine();
-                if (line.trim().equalsIgnoreCase(FAMWORDS.EXIT.getKeyword())) {
+                if (line.trim().equalsIgnoreCase(FAMWORDS.EXIT.getKeyword())) {// leave the interpreter 
                     break;
                 }
-                if (line.trim().equalsIgnoreCase(FAMWORDS.CLEAR.getKeyword())) {
+                if (line.trim().equalsIgnoreCase(FAMWORDS.CLEAR.getKeyword())) {// clear the screen
                     cleanScreen();
                     cls = true;
                 }
@@ -131,8 +131,10 @@ public class Interpreter {
             case LEN:// length of Words/Letters in String, List or Array
                 //ReadyFuncs r = new ReadyFuncs(intVariables, stringVariables);
                 //System.out.println("Variable '" + tokens[1] + "' length's is _" + r.len(tokens[1]) + "_");
-                System.out.println("Variable '" + tokens[1] + "' length's in Letters is _" + len(tokens[1], 'l') + "_");
-                System.out.println("Variable '" + tokens[1] + "' length's in Words is _" + len(tokens[1], 'w') + "_");
+                len(tokens, 'l');
+                System.out.println(" letters");
+                len(tokens, 'w');
+                System.out.println(" words");
                 break;
             default:
                 // <fun_name> % <variables[,]> %
@@ -573,37 +575,77 @@ public class Interpreter {
         return result;
     }
 
-    public static int len(String varName, char c) {
-        if (!intVariables.containsKey(varName) && !stringVariables.containsKey(varName)) {
-            System.out.println("Variable not found: " + varName);
-            return 0;// TODO: fix len to handle unidentified variables in len, and not an emoty strings!
+    public static int len(String[] tokens, char c) {
+        String varValue = "";
+        if (tokens[1].equals("'")){
+            for (int i = 2; i < tokens.length; i++) {
+                if (tokens[i].equals("'"))
+                    break;
+                varValue += tokens[i];
+                varValue += " ";
+            }
+            System.out.println(returnLength(varValue, c, false));
         }
+        else{
+            String varName = tokens[1];
+            if (!intVariables.containsKey(varName) && !stringVariables.containsKey(varName)) {
+                System.out.println("Variable not found: " + varName);
+                return 0;
+            }
+            System.out.println(returnLength(varName, c, true));
+        }
+        return 1;
+    }
+    public static int returnLength(Object varNameValue, char c, boolean isVariable){
+        if (isVariable){
+            Object varValue;
+            if (intVariables.containsKey(varNameValue)) {
+                varValue = intVariables.get(varNameValue);
+            } else {
+                varValue = stringVariables.get(varNameValue);
+            }
+        
+            if (varValue instanceof String) {
+                String[] words = ((String) varValue).trim().split("\\s+");
+                String[] letters = ((String) varValue).trim().split("");
+                return (c == 'w') ? words.length : letters.length;
+            } 
+            // else if (varValue instanceof List) {
+            //     return ((List<?>) varValue).size();
+            // } else if (varValue.getClass().isArray()) {
+            //     return java.lang.reflect.Array.getLength(varValue);
+            // } 
+            else if (varValue instanceof Integer || varValue instanceof Double) {
+                System.out.println("This is a Num.\nIf you want the length, convert it to String, List or Array.");
+                return -1;
+            } else if (varValue instanceof Boolean) {
+                System.out.println("This is a Boolean.\nIf you want the length, convert it to String, List or Array.");
+                return -1;
+            } else {
+                throw new IllegalArgumentException("Unsupported type: " + varValue.getClass());
+            }    
+        }
+        else{
+            if (varNameValue instanceof String) {
+                String[] words = ((String) varNameValue).trim().split("\\s+");
+                String[] letters = ((String) varNameValue).trim().split("");
+                return (c == 'w') ? words.length : letters.length;
+            } 
+            // else if (varValue instanceof List) {
+            //     return ((List<?>) varValue).size();
+            // } else if (varValue.getClass().isArray()) {
+            //     return java.lang.reflect.Array.getLength(varValue);
+            // } 
+            else if (varNameValue instanceof Integer || varNameValue instanceof Double) {
+                System.out.println("This is a Num.\nIf you want the length, convert it to String, List or Array.");
+                return -1;
+            } else if (varNameValue instanceof Boolean) {
+                System.out.println("This is a Boolean.\nIf you want the length, convert it to String, List or Array.");
+                return -1;
+            } else {
+                throw new IllegalArgumentException("Unsupported type: " + varNameValue.getClass());
+            }    
 
-        Object varValue;
-        if (intVariables.containsKey(varName)) {
-            varValue = intVariables.get(varName);
-        } else {
-            varValue = stringVariables.get(varName);
-        }
-    
-        if (varValue instanceof String) {
-            String[] words = ((String) varValue).trim().split("\\s+");
-            String[] letters = ((String) varValue).trim().split("");
-            return (c == 'w') ? words.length : letters.length;
-        } 
-        // else if (varValue instanceof List) {
-        //     return ((List<?>) varValue).size();
-        // } else if (varValue.getClass().isArray()) {
-        //     return java.lang.reflect.Array.getLength(varValue);
-        // } 
-        else if (varValue instanceof Integer || varValue instanceof Double) {
-            System.out.println("This is a Num.\nIf you want the length, convert it to String, List or Array.");
-            return -1;
-        } else if (varValue instanceof Boolean) {
-            System.out.println("This is a Boolean.\nIf you want the length, convert it to String, List or Array.");
-            return -1;
-        } else {
-            throw new IllegalArgumentException("Unsupported type: " + varValue.getClass());
         }
     }
     
