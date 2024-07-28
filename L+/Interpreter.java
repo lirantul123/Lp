@@ -9,12 +9,12 @@ import java.util.Scanner;
 // TODO: Modify the enum. Process: 9/10
 // TODO: Correct while loop and for loop
 // TODO: if function...
-// TODO: len ' e ' and not only to variables
+// TODO: len ' e ' and not only variables accaptable
 
 public class Interpreter {
 
     public static final int IncreDecreValue = 1;
-    // Familiar words within the system
+    // Familiar words with the system
     public enum FAMWORDS {
         VAR("var"), PRINT("print"), IF("if"), WHILE("while"),
         FOR("for"), FUN("fun"), CLEAR("clear"), EXIT("exit"),
@@ -39,7 +39,7 @@ public class Interpreter {
         }
     }
        
-    private static HashMap<String, Integer> intVariables;
+    private static HashMap<String, Double> intVariables;
     private static HashMap<String, String> stringVariables;
     // [fun_name], [variables, content]
     private static HashMap<String, Map.Entry<List<String>, List<String>>> functions;
@@ -156,7 +156,7 @@ public class Interpreter {
         String varName = tokens[0];
 
         if (intVariables.containsKey(varName)) {
-            int currentValue = intVariables.get(varName);
+            double currentValue = intVariables.get(varName);
             intVariables.put(varName, currentValue + IncreDecreValue);
         } else {
             System.out.println("Variable not found: " + varName);
@@ -171,7 +171,7 @@ public class Interpreter {
         String varName = tokens[0];
 
         if (intVariables.containsKey(varName)) {
-            int currentValue = intVariables.get(varName);
+            double currentValue = intVariables.get(varName);
             intVariables.put(varName, currentValue - IncreDecreValue);
         } else {
             System.out.println("Variable not found: " + varName);
@@ -206,8 +206,8 @@ public class Interpreter {
     
     // for Conditions
     private static boolean evaluateCondition(String leftOperand, String operator, String rightOperand) {
-        int leftValue = getValue(leftOperand);
-        int rightValue = getValue(rightOperand);
+        double leftValue = getValue(leftOperand);
+        double rightValue = getValue(rightOperand);
 
         switch (operator) {
             case "<":
@@ -227,7 +227,7 @@ public class Interpreter {
                 return false;
         }
     }
-    private static int getValue(String operand) {
+    private static double getValue(String operand) {
         if (intVariables.containsKey(operand)) {// here String also shoud be a prospect
             return intVariables.get(operand);
         }
@@ -254,7 +254,7 @@ public class Interpreter {
         String[] bodyLines = bodyBuilder.toString().split(";");
 
         for (int i = start; i < end; i++) {
-            intVariables.put(varName, i);// here also!
+            intVariables.put(varName, (double)(i));
             for (String line : bodyLines) {
                 executeLine(line.trim(), false);
             }
@@ -401,7 +401,7 @@ public class Interpreter {
             }
         }else{// int/double
             try {
-                int varValue = Integer.parseInt(tokens[3]);
+                double varValue = Double.parseDouble(tokens[3]);
                 intVariables.put(varName, varValue);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid variable value: " + tokens[3]);
@@ -418,7 +418,7 @@ public class Interpreter {
         String varName = tokens[1];
 
         if (intVariables.containsKey(varName)) {
-            int varValue = intVariables.get(varName);
+            double varValue = intVariables.get(varName);
             if (tokens.length > 2 && isMathExpression(tokens)) {
                 double result = evaluateMathExpression(Arrays.copyOfRange(tokens, 2, tokens.length), varValue);
                 System.out.println(result);
