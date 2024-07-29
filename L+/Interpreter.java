@@ -9,7 +9,6 @@ import java.util.Scanner;
 // TODO: Modify the enum. Process: 9/10
 // TODO: Correct while loop and for loop
 // TODO: if function...
-// TODO: len ' e ' and not only variables accaptable
 
 public class Interpreter {
 
