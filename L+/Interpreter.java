@@ -95,36 +95,48 @@ public class Interpreter {
         FAMWORDS keyword = FAMWORDS.fromString(tokens[0]);
 
         if (keyword == null) {
-            System.out.println("Invalid statement or function not found: " + tokens[0]);
+            // Handle the case where the keyword is null
+            if (!revaluateVariable(tokens)) {
+                if (!tokens[1].trim().equalsIgnoreCase(FAMWORDS.PP.getKeyword()) && !tokens[1].trim().equalsIgnoreCase(FAMWORDS.MM.getKeyword())) {
+                    // <fun_name> % <variables[,]> %
+                    executeExistFunction(tokens);
+                } else {
+                    if (tokens[1].trim().equalsIgnoreCase(FAMWORDS.MM.getKeyword())) {
+                        decrementVar(tokens); // decrement by 1
+                    } else {
+                        incrementVar(tokens); // increment by 1
+                    }
+                }
+            } else {
+                System.out.println("Mission Accomplished");
+            }
             return;
         }
-
+    
         switch (keyword) {
-            case VAR:// variable// a = something else, shittt without var now redefine
+            case VAR: // variable
                 executeVarDeclaration(tokens);
                 break;
-            case PRINT:// print
+            case PRINT: // print
                 executePrint(tokens);
                 break;
-            case IF:// if
+            case IF: // if
                 executeIf(Arrays.copyOfRange(tokens, 1, tokens.length));
                 break;
-            case FUN:// function
-                if (!innerFun){
+            case FUN: // function
+                if (!innerFun) {
                     executeFunction(tokens);
-                    break;
-                }
-                else{
+                } else {
                     System.out.println("\n| 'Syntax Error: Function definition cannot be inside one.' |\n");
-                    break;
                 }
-            case WHILE:// while - SHIT FOR NOW
+                break;
+            case WHILE: // while - SHIT FOR NOW
                 executeWhile(tokens);
                 break;
-            case FOR:// for - SHIT FOR NOW
+            case FOR: // for - SHIT FOR NOW
                 executeFor(tokens);
                 break;
-            case COMMENT:// comment
+            case COMMENT: // comment
                 break;
             case LEN:// length of Words/Letters in String, List or Array
                 //ReadyFuncs r = new ReadyFuncs(intVariables, stringVariables);
@@ -135,16 +147,27 @@ public class Interpreter {
                 System.out.println(" words");
                 break;
             default:
-                // <fun_name> % <variables[,]> %
-                if (!tokens[1].trim().equalsIgnoreCase(FAMWORDS.PP.getKeyword()) && !tokens[1].trim().equalsIgnoreCase(FAMWORDS.MM.getKeyword()))
-                    executeExistFunction(tokens);
-                else{
-                    if (tokens[1].trim().equalsIgnoreCase(FAMWORDS.MM.getKeyword())){
-                        incrementVar(tokens);// increment by 1
-                    }
-                    else
-                        decrementVar(tokens);// decrement by 1
-                }
+                System.out.println("Unexpected keyword: " + tokens[0]);
+        }
+    }
+
+    private static boolean revaluateVariable(String[] tokens) {
+        if (tokens.length < 3) {
+            System.out.println("Invalid Revaluate Variable statement: " + String.join(" ", tokens));
+            return false;
+        }
+        // TODO: Handle erroring in type
+        String varName = tokens[0];
+        if (intVariables.containsKey(varName) ) {
+            double currentValue = Double.parseDouble(tokens[2]);
+            intVariables.put(varName, currentValue);
+            return true;
+        }else if (stringVariables.containsKey(varName)) {
+            stringVariables.put(varName, tokens[2]);
+            return true;
+        } else {
+            System.out.println("Variable not found: " + varName);
+            return false;
         }
     }
 
@@ -653,7 +676,7 @@ public class Interpreter {
             interpreter.execute();
 
         } catch (Exception e) {
-            System.out.println("Error in initializing the interpreter: " + e.getMessage());
+            System.out.println("Error in initializing the interpreter:\n " + e.getMessage() + "\n");
         } 
     }
 }
