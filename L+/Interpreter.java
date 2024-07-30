@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-// TODO: Modify the enum. Process: 9/10
 // TODO: Correct while loop and for loop
 // TODO: if function...
 
@@ -28,8 +27,8 @@ public class Interpreter {
         public String getKeyword() {
             return keyword;
         }
-        public static FAMWORDS fromString(String keyword) {
-            for (FAMWORDS word : FAMWORDS.values()) {// searching for the value (var√ print√... etc)
+        public static FAMWORDS fromString(String keyword) {// searching for the value (var√ print√... etc)
+            for (FAMWORDS word : FAMWORDS.values()) {
                 if (word.keyword.equalsIgnoreCase(keyword)) {
                     return word;
                 }
