@@ -32,7 +32,7 @@ public class Dijkstra {
                 }
             }
         }
-        List<int[]> path = new ArrayList<>();;
+        List<int[]> path = new ArrayList<>();
         if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
             // Find the shortest path using Dijkstra's algorithm
             // grid, 1, 1, 5, 8
