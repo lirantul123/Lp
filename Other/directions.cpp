@@ -19,7 +19,6 @@ public:
                 }
             }
         }
-        
         grid[y1][x1] = '&';  // Start position
         grid[y2][x2] = '$';  // End position
     }
