@@ -8,7 +8,6 @@ private:
     int x1, y1, x2, y2;  // Private members for coordinates
 
 public:
-    // Constructor to initialize the grid and positions
     PathFinder(int startX, int startY, int endX, int endY) : x1(startX), y1(startY), x2(endX), y2(endY) {
         // Initialize the grid with borders and empty spaces
         for (int i = 0; i < 7; ++i) {
@@ -20,11 +19,9 @@ public:
                 }
             }
         }
-        // Correct the coordinates for grid orientation (flip y)
-        y1 = 6 - y1;
-        y2 = 6 - y2;
-
-        grid[y1][x1] = '&';  // Starting position
+        
+        grid[y1][x1] = '&';  // Start position
+        grid[y2][x2] = '$';  // End position
     }
 
     void drawIllustration(char grid[7][10]) {
@@ -72,9 +69,6 @@ public:
             grid[y1][x1] = '|';
         }
 
-        // Place the start and end points on the grid
-        grid[y2][x2] = '$';  // End position
-
         // Output the grid with the path
         drawIllustration(grid);
 
@@ -114,13 +108,6 @@ int main() {
 
     std::cout << "Enter destination location (x2 y2): ";
     std::cin >> x2 >> y2;
-
-    // Correct the coordinates for grid orientation (flip y)
-    y1 = 6 - y1;
-    y2 = 6 - y2;
-
-    // Place the start point
-    // grid[6 - y1][x1] = '&';  // Starting position
 
     try {
         // Validate input to ensure coordinates are within bounds
