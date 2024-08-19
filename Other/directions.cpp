@@ -4,8 +4,8 @@
 
 class PathFinder {
 private:
-    char grid[7][10];  // Private member to store the grid
-    int x1, y1, x2, y2;  // Private members for coordinates
+    char grid[7][10]; // Private member to store the grid
+    int x1, y1, x2, y2; // Private members for coordinates
 
 public:
     PathFinder(int startX, int startY, int endX, int endY) : x1(startX), y1(startY), x2(endX), y2(endY) {
@@ -19,8 +19,8 @@ public:
                 }
             }
         }
-        grid[y1][x1] = '&';  // Start position
-        grid[y2][x2] = '$';  // End position
+        grid[y1][x1] = '&'; // Start position
+        grid[y2][x2] = '$'; // End position
     }
 
     void drawIllustration(char grid[7][10]) {
