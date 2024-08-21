@@ -21,6 +21,9 @@ public:
         }
         grid[y1][x1] = '&'; // Start position
         grid[y2][x2] = '$'; // End position
+
+        std::cout << "(" << x1 << ", " << y1 << ")" << grid[y1][x1] << "\n";
+        std::cout << "(" << x2 << ", " << y2 << ")" << grid[y2][x2] << "\n";
     }
 
     void drawIllustration(char grid[7][10]) {
@@ -59,13 +62,17 @@ public:
         // Move horizontally after diagonal movement
         for (int i = 0; i < abs(dx) - diagonal_steps; ++i) {
             x1 += (dx > 0) ? 1 : -1;
-            grid[y1][x1] = '-';
+            if (grid[y1][x1] != '$') {
+                grid[y1][x1] = '-';
+            }     
         }
 
         // Move vertically after horizontal movement
         for (int i = 0; i < abs(dy) - diagonal_steps; ++i) {
             y1 += (dy > 0) ? 1 : -1;
-            grid[y1][x1] = '|';
+            if (grid[y1][x1] != '$') {
+                grid[y1][x1] = '|';
+            }
         }
 
         // Output the grid with the path
