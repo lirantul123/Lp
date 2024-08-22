@@ -4,8 +4,8 @@
 
 class PathFinder {
 private:
-    char grid[7][10]; // Private member to store the grid
-    int x1, y1, x2, y2; // Private members for coordinates
+    char grid[7][10]; 
+    int x1, y1, x2, y2; 
 
 public:
     PathFinder(int startX, int startY, int endX, int endY) : x1(startX), y1(startY), x2(endX), y2(endY) {
@@ -27,7 +27,7 @@ public:
     }
 
     void drawIllustration(char grid[7][10]) {
-        // Print the grid, flipped for 180-degree orientation
+        // Print the grid, flipped for 180 degree - shit idk
         for (int i = 6; i >= 0; --i) {
             for (int j = 0; j < 10; ++j) {
                 std::cout << grid[i][j] << ' ';
