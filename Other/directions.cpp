@@ -1,133 +1,157 @@
 #include <iostream>
-#include <cmath>
-#include <algorithm>
+#include <vector>
+#include <queue>
+#include <utility>
+#include <limits>
+
+using namespace std;
 
 class PathFinder {
 private:
-    char grid[7][10]; 
+    vector<vector<char>> grid; 
+    int rows, cols;
     int x1, y1, x2, y2; 
 
+    // right, down, left, up
+    const vector<pair<int, int>> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+    const vector<string> direction_names = {"right", "down", "left", "up"};
+
+    struct Node {
+        int x, y, cost;
+        Node(int x, int y, int cost) : x(x), y(y), cost(cost) {}
+        bool operator>(const Node& other) const {
+            return cost > other.cost;
+        }
+    };
+
+    pair<int, int> direction_to_pair(int index) {
+        return directions[index];
+    }
+
+    string direction_to_string(int index) {
+        return direction_names[index];
+    }
+
+    void add_move_direction(int dx, int dy, string& move_description) {
+        if (dx > 0) move_description += "east";
+        else if (dx < 0) move_description += "west";
+        if (dy > 0) move_description += (dx != 0) ? "-northeast" : "north";
+        else if (dy < 0) move_description += (dx != 0) ? "-southwest" : "south";
+    }
+
 public:
-    PathFinder(int startX, int startY, int endX, int endY) : x1(startX), y1(startY), x2(endX), y2(endY) {
+    PathFinder(int startX, int startY, int endX, int endY, int rows, int cols)
+        : x1(startX), y1(startY), x2(endX), y2(endY), rows(rows), cols(cols) {
+        
         // Initialize the grid with borders and empty spaces
-        for (int i = 0; i < 7; ++i) {
-            for (int j = 0; j < 10; ++j) {
-                if (i == 0 || i == 6 || j == 0 || j == 9) {
-                    grid[i][j] = '#';
-                } else {
-                    grid[i][j] = '.';
-                }
-            }
+        grid.resize(rows, vector<char>(cols, '.'));
+        for (int i = 0; i < rows; ++i) {
+            grid[i][0] = grid[i][cols - 1] = '#';
+        }
+        for (int j = 0; j < cols; ++j) {
+            grid[0][j] = grid[rows - 1][j] = '#';
         }
         grid[y1][x1] = '&'; // Start position
         grid[y2][x2] = '$'; // End position
-
-        std::cout << "(" << x1 << ", " << y1 << ")" << grid[y1][x1] << "\n";
-        std::cout << "(" << x2 << ", " << y2 << ")" << grid[y2][x2] << "\n";
     }
 
-    void drawIllustration(char grid[7][10]) {
-        // Print the grid, flipped for 180 degree - shit idk
-        for (int i = 6; i >= 0; --i) {
-            for (int j = 0; j < 10; ++j) {
-                std::cout << grid[i][j] << ' ';
-            }
-            std::cout << std::endl;
+    void addObstacle(int x, int y) {
+        if (x > 0 && x < cols - 1 && y > 0 && y < rows - 1) {
+            grid[y][x] = 'X'; // Place an obstacle
         }
     }
 
     void calculate_steps() {
-        int dx = x2 - x1;
-        int dy = y2 - y1;
+        priority_queue<Node, vector<Node>, greater<Node>> pq;
+        pq.push(Node(x1, y1, 0));
 
-        int diagonal_steps = std::min(abs(dx), abs(dy));
-        int diagonal_direction_x = (dx > 0) ? 1 : -1;
-        int diagonal_direction_y = (dy > 0) ? 1 : -1;
+        vector<vector<int>> cost(rows, vector<int>(cols, numeric_limits<int>::max()));
+        vector<vector<pair<int, int>>> came_from(rows, vector<pair<int, int>>(cols, {-1, -1}));
 
-        // Move diagonally and mark on the grid
-        for (int i = 0; i < diagonal_steps; ++i) {
-            x1 += diagonal_direction_x;
-            y1 += diagonal_direction_y;
+        cost[y1][x1] = 0;
 
-            if (diagonal_direction_x == 1 && diagonal_direction_y == 1)
-                grid[y1][x1] = '/';  // Northeast
-            else if (diagonal_direction_x == -1 && diagonal_direction_y == 1)
-                grid[y1][x1] = '\\'; // Northwest
-            else if (diagonal_direction_x == 1 && diagonal_direction_y == -1)
-                grid[y1][x1] = '\\'; // Southeast
-            else if (diagonal_direction_x == -1 && diagonal_direction_y == -1)
-                grid[y1][x1] = '/';  // Southwest
-        }
+        while (!pq.empty()) {
+            Node current = pq.top();
+            pq.pop();
 
-        // Move horizontally after diagonal movement
-        for (int i = 0; i < abs(dx) - diagonal_steps; ++i) {
-            x1 += (dx > 0) ? 1 : -1;
-            if (grid[y1][x1] != '$') {
-                grid[y1][x1] = '-';
-            }     
-        }
+            if (current.x == x2 && current.y == y2) break; // Reached destination
 
-        // Move vertically after horizontal movement
-        for (int i = 0; i < abs(dy) - diagonal_steps; ++i) {
-            y1 += (dy > 0) ? 1 : -1;
-            if (grid[y1][x1] != '$') {
-                grid[y1][x1] = '|';
+            for (int i = 0; i < directions.size(); ++i) {
+                int dx = directions[i].first;
+                int dy = directions[i].second;
+                int nx = current.x + dx;
+                int ny = current.y + dy;
+                int new_cost = current.cost + 1;
+
+                if (nx >= 0 && nx < cols && ny >= 0 && ny < rows && grid[ny][nx] != 'X' && new_cost < cost[ny][nx]) {
+                    cost[ny][nx] = new_cost;
+                    came_from[ny][nx] = {current.x, current.y};
+                    pq.push(Node(nx, ny, new_cost));
+                }
             }
         }
 
-        // Output the grid with the path
-        drawIllustration(grid);
+        // Reconstruct path
+        int cx = x2, cy = y2;
+        string move_description;
+        while (cx != x1 || cy != y1) {
+            auto [px, py] = came_from[cy][cx];
+            if (px == -1 || py == -1) break; // No path found
 
-        // Output the specific direction
-        if (diagonal_steps > 0) {
-            std::cout << "Move " << diagonal_steps << " steps ";
-            if (diagonal_direction_x == 1 && diagonal_direction_y == 1)
-                std::cout << "Northeast\n";
-            else if (diagonal_direction_x == -1 && diagonal_direction_y == 1)
-                std::cout << "Northwest\n";
-            else if (diagonal_direction_x == 1 && diagonal_direction_y == -1)
-                std::cout << "Southeast\n";
-            else if (diagonal_direction_x == -1 && diagonal_direction_y == -1)
-                std::cout << "Southwest\n";
+            int dx = cx - px;
+            int dy = cy - py;
+
+            if (dx != 0 && dy != 0) {
+                grid[cy][cx] = (dx > 0 && dy > 0) ? '/' : '\\'; // Diagonal move
+                move_description = (dx > 0) ? (dy > 0 ? "northeast" : "southeast") : (dy > 0 ? "northwest" : "southwest");
+            } else if (dx != 0) {
+                grid[cy][cx] = (dx > 0) ? '>' : '<'; // Horizontal move
+                move_description = (dx > 0) ? "east" : "west";
+            } else {
+                grid[cy][cx] = (dy > 0) ? '^' : 'v'; // Vertical move
+                move_description = (dy > 0) ? "north" : "south";
+            }
+
+            cout << "Move " << move_description << " from (" << px << ", " << py << ") to (" << cx << ", " << cy << ")\n";
+
+            cx = px;
+            cy = py;
         }
 
-        // Remaining vertical steps
-        if (dy > diagonal_steps)
-            std::cout << "Move " << dy - diagonal_steps << " steps North\n";
-        else if (dy < -diagonal_steps)
-            std::cout << "Move " << abs(dy + diagonal_steps) << " steps South\n";
+        grid[y1][x1] = '&'; // Ensure start is marked
+        grid[y2][x2] = '$'; // Ensure end is marked
 
-        // Remaining horizontal steps
-        if (dx > diagonal_steps)
-            std::cout << "Move " << dx - diagonal_steps << " steps East\n";
-        else if (dx < -diagonal_steps)
-            std::cout << "Move " << abs(dx + diagonal_steps) << " steps West\n";
+        drawIllustration();
+    }
+
+    void drawIllustration() {
+        for (int i = rows - 1; i >= 0; --i) {
+            for (int j = 0; j < cols; ++j) {
+                cout << grid[i][j] << ' ';
+            }
+            cout << "\n";
+        }
     }
 };
 
-
 int main() {
-    int x1, y1, x2, y2;
+    int x1, y1, x2, y2, rows, cols;
 
-    std::cout << "Enter current location (x1 y1): ";
-    std::cin >> x1 >> y1;
+    cout << "Enter grid size (rows cols): ";
+    cin >> rows >> cols;
+    cout << "Enter current location (x1 y1): ";
+    cin >> x1 >> y1;
+    cout << "Enter destination location (x2 y2): ";
+    cin >> x2 >> y2;
 
-    std::cout << "Enter destination location (x2 y2): ";
-    std::cin >> x2 >> y2;
+    cout << "\n";
 
-    try {
-        // Validate input to ensure coordinates are within bounds
-        if (x1 < 0 || x1 > 9 || y1 < 0 || y1 > 6 || x2 < 0 || x2 > 9 || y2 < 0 || y2 > 6) {
-            throw std::out_of_range("Coordinates must be within grid bounds (0-9 for x and 0-6 for y).");
-        }
+    PathFinder path(x1, y1, x2, y2, rows, cols);
 
-        // Create a PathFinder object
-        PathFinder path(x1, y1, x2, y2);
-        path.calculate_steps();
+    path.addObstacle(3, 3);
+    path.addObstacle(4, 2);
 
-    } catch (const std::out_of_range &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+    path.calculate_steps();
 
     return 0;
 }
