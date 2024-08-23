@@ -19,7 +19,7 @@ private:
     struct Node {
         int x, y, cost;
         Node(int x, int y, int cost) : x(x), y(y), cost(cost) {}
-        bool operator>(const Node& other) const {
+        bool operator>(const Node& other) const {// operator to determine the cumulative "expense" or "distance" incurred to reach a particular node (cost)
             return cost > other.cost;
         }
     };
