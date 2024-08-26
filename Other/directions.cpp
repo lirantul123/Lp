@@ -19,7 +19,7 @@ private:
     struct Node {
         int x, y, cost;
         Node(int x, int y, int cost) : x(x), y(y), cost(cost) {}
-        bool operator>(const Node& other) const {// operator to determine the cumulative "expense" or "distance" incurred to reach a particular node (cost)
+        bool operator>(const Node& other) const {// operator to determine the cumulative "expense"(distance) incurred to reach a particular node (-cost)
             return cost > other.cost;
         }
     };
@@ -69,7 +69,7 @@ public:
         vector<vector<pair<int, int>>> came_from(rows, vector<pair<int, int>>(cols, {-1, -1}));
 
         cost[y1][x1] = 0;
-
+        //Dijkstra algorithm
         while (!pq.empty()) {
             Node current = pq.top();
             pq.pop();
@@ -95,7 +95,7 @@ public:
         int cx = x2, cy = y2;
         string move_description;
         while (cx != x1 || cy != y1) {
-            auto [px, py] = came_from[cy][cx];
+            auto [px, py] = came_from[cy][cx];// auto because too longgg
             if (px == -1 || py == -1) break; // No path found
 
             int dx = cx - px;
@@ -118,8 +118,8 @@ public:
             cy = py;
         }
 
-        grid[y1][x1] = '&'; // Ensure start is marked
-        grid[y2][x2] = '$'; // Ensure end is marked
+        grid[y1][x1] = '&'; // Ensure start is marked - shit
+        grid[y2][x2] = '$'; // Ensure end is marked - shit
 
         drawIllustration();
     }
@@ -148,6 +148,7 @@ int main() {
 
     PathFinder path(x1, y1, x2, y2, rows, cols);
 
+    // Instance for Obstacles
     path.addObstacle(3, 3);
     path.addObstacle(4, 2);
 
