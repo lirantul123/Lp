@@ -23,7 +23,7 @@ private:
             return cost > other.cost;
         }
     };
-
+    
     pair<int, int> direction_to_pair(int index) {
         return directions[index];
     }
@@ -121,6 +121,7 @@ public:
         grid[y1][x1] = '&'; // Ensure start is marked - shit
         grid[y2][x2] = '$'; // Ensure end is marked - shit
 
+        cout << "\n";
         drawIllustration();
     }
 
