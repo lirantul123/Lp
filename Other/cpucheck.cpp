@@ -28,15 +28,14 @@ int main() {
     while (true){
         if (usage >= 70 && usage < 90)
             std::cout << "Starts to be dangers" << std::endl;
-        if (usage >= 90)
+        else if (usage >= 90)
             std::cout << "Damme, stop or cool" << std::endl;
 
         if (usage > 0) 
             std::cout << "Current CPU Usage: " << usage << "%" << std::endl;
 
-        usage = getCPUUsage();   
         sleep(2);
-
+        usage = getCPUUsage();   
     }
 
     return 0;
