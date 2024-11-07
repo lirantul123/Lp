@@ -1,5 +1,3 @@
-package Lp.Bullll;
-
 import java.util.*;
 
 public class Dijkstra {
