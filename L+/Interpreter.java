@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 // TODO: Correct while loop and for loop
 // TODO: if function...
+// TODO: 'return' exp: return true/false, exp: return 1/-999, exp: return ' hello ' + x, but not return undefined string
 
 public class Interpreter {
 
@@ -499,7 +500,7 @@ public class Interpreter {
             return;
         }
 
-        // Accaptable: if x * ( 3 - 1 ) > 5 * a  $ print true$
+        // Accaptable: if x * ( 3 - 1 ) > 5 * a  $ print true $
         // String varName = tokens[1];
         // double num;
         // if (intVariables.containsKey(varName)) {
